@@ -1,6 +1,9 @@
 <Solution>
-  <Project Path="../pharmacy.Application/pharmacy.Application.csproj" />
-  <Project Path="../pharmacy.domin/pharmacy.domin.csproj" />
-  <Project Path="../pharmacy.infrastructuree/pharmacy.infrastructuree.csproj" />
-  <Project Path="Pharmacy.web.csproj" />
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+  </Folder>
+  <Project Path="pharmacy.Application/pharmacy.Application.csproj" />
+  <Project Path="pharmacy.domin/pharmacy.domin.csproj" />
+  <Project Path="pharmacy.infrastructuree/pharmacy.infrastructuree.csproj" />
+  <Project Path="pharmacy.web/pharmacy.web.csproj" />
 </Solution>

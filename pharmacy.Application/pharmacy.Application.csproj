@@ -1,9 +1,9 @@
-Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,8 +16,7 @@ Project Sdk="Microsoft.NET.Sdk.Web">
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\pharmacy.Application\pharmacy.Application.csproj" />
-    <ProjectReference Include="..\pharmacy.infrastructuree\pharmacy.infrastructuree.csproj" />
+    <ProjectReference Include="..\pharmacy.domin\pharmacy.domin.csproj" />
   </ItemGroup>
 
 </Project>

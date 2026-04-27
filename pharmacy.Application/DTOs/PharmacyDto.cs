@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace pharmacy.Application.DTOs
+{
+    public class PharmacyDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string Phone { get; set; }
+        public double Rating { get; set; }
+        public bool IsOpen { get; set; }
+        public string? ImageUrl { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public double? Distance { get; set; }    // ← المسافة من المريض
+        public List<MedicineDto> Medicines { get; set; } = new();
+
+    }
+
+}
