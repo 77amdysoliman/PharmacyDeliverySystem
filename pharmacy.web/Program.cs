@@ -27,6 +27,21 @@ namespace pharmacy.web
             builder.Services.AddScoped<IPharmacyService, PharmacyService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
             // Add services to the container.
+            builder.Services.AddDbContext<AppDbContext>(options =>
+          options.UseSqlServer(builder.Configuration
+        .GetConnectionString("PharmacyConnection"),
+        b => b.MigrationsAssembly("pharmacy.infrastructuree")));
+
+
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+
+            builder.Services.AddScoped<IMedicineService, MedicineService>();
+            builder.Services.AddScoped<IPharmacyService, PharmacyService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+
+
             builder.Services.AddRazorPages();
 
 

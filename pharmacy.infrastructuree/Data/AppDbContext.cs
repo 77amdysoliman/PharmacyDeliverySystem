@@ -5,8 +5,8 @@ using System.Reflection.Emit;
 
 namespace pharmacy.infrastructuree.Data
 {
-    public class AppDbContext : DbContext
-    {
+        public class AppDbContext : DbContext
+        {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<Pharmacy> Pharmacies { get; set; }
