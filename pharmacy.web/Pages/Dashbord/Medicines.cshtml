@@ -1,0 +1,291 @@
+﻿@page "/Medicines"
+@model Pharmacy.web.Pages.Medicines.IndexModel
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="toast" style="
+        position:fixed; 
+        top:30px; 
+        left:50%; 
+        transform:translateX(-50%);
+        background:white; 
+        color:#16a34a;
+        padding:16px 30px; 
+        border-radius:14px; 
+        box-shadow:0 8px 30px rgba(0,0,0,0.12); 
+        z-index:9999; 
+        font-weight:600; 
+        font-size:15px; 
+        display:flex; 
+        align-items:center; 
+        gap:12px;
+        border-left:5px solid #16a34a;
+        min-width:300px;
+        animation: slideDown 0.3s ease;">
+        <span style="font-size:22px;">✅</span>
+        <span>@TempData["SuccessMessage"]</span>
+    </div>
+
+    <style>
+        @@keyframes slideDown {
+            from { top:0px; opacity:0; }
+            to   { top:30px; opacity:1; }
+        }
+    </style>
+
+    <script>
+        setTimeout(function () {
+            var toast = document.getElementById('toast');
+            toast.style.transition = 'opacity 0.5s';
+            toast.style.opacity = '0';
+            setTimeout(function() { toast.style.display = 'none'; }, 500);
+        }, 2500);
+    </script>
+}
+
+<!-- Add/Edit Modal -->
+<div id="medicineModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+    <div style="background:white; border-radius:16px; padding:30px; width:500px; box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 id="modalTitle" style="margin:0; font-size:20px; font-weight:700;">Add New Medicine</h3>
+            <button onclick="closeModal()" style="background:none; border:none; font-size:22px; cursor:pointer; color:#888;">✕</button>
+        </div>
+
+        <form method="post" id="medicineForm"asp-page-handler="Create">
+            <input type="hidden" asp-for="Medicine.Id" id="medicineId" />
+
+            <div style="margin-bottom:15px;">
+                <label style="font-size:14px; font-weight:600; color:#374151;">Medicine Name *</label>
+                <input asp-for="Medicine.Name" placeholder="Enter medicine name"
+                       style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:8px; margin-top:5px; font-size:14px; box-sizing:border-box;" />
+                <span asp-validation-for="Medicine.Name" style="color:#ef4444; font-size:12px;"></span>
+            </div>
+
+            <div style="margin-bottom:15px;">
+                <label style="font-size:14px; font-weight:600; color:#374151;">Description</label>
+                <textarea asp-for="Medicine.Description" placeholder="Enter description" rows="2"
+                          style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:8px; margin-top:5px; font-size:14px; box-sizing:border-box;"></textarea>
+                <span asp-validation-for="Medicine.Description" style="color:#ef4444; font-size:12px;"></span>
+            </div>
+
+            <div style="margin-bottom:15px;">
+    <label style="font-size:14px; font-weight:600; color:#374151;">Category *</label>
+    <select asp-for="Medicine.CategoryId" id="Medicine_CategoryId"
+            style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:8px; margin-top:5px; font-size:14px; box-sizing:border-box; background:white;">
+        <option value="">-- Select Category --</option>
+        @foreach (var category in Model.Categories)
+        {
+            <option value="@category.Id">@category.Name</option>
+        }
+    </select>
+    <span asp-validation-for="Medicine.CategoryId" style="color:#ef4444; font-size:12px;"></span>
+</div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:15px;">
+                <div>
+                    <label style="font-size:14px; font-weight:600; color:#374151;">Price (EGP) *</label>
+                    <input asp-for="Medicine.Price" type="number" placeholder="0.00"
+                           style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:8px; margin-top:5px; font-size:14px; box-sizing:border-box;" />
+                    <span asp-validation-for="Medicine.Price" style="color:#ef4444; font-size:12px;"></span>
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="font-size:14px; font-weight:600; color:#374151;">Stock</label>
+                    <input asp-for="Medicine.Stock" type="number" placeholder="0"
+                           style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:8px; margin-top:5px; font-size:14px; box-sizing:border-box;" />
+                    <span asp-validation-for="Medicine.Stock" style="color:#ef4444; font-size:12px;"></span>
+                </div>
+                <div>
+                    <label style="font-size:14px; font-weight:600; color:#374151;">Manufacturer</label>
+                    <input asp-for="Medicine.Manufacturer" placeholder="Manufacturer"
+                           style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:8px; margin-top:5px; font-size:14px; box-sizing:border-box;" />
+                    <span asp-validation-for="Medicine.Manufacturer" style="color:#ef4444; font-size:12px;"></span>
+                </div>
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label style="display:flex; align-items:center; gap:8px; font-size:14px; font-weight:600; color:#374151; cursor:pointer;">
+                    <input asp-for="Medicine.RequiresPrescription" type="checkbox" style="width:16px; height:16px;" />
+                    Requires Prescription
+                </label>
+            </div>
+
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+                <button type="button" onclick="closeModal()"
+                        style="padding:10px 24px; border:1px solid #e2e8f0; border-radius:8px; background:white; cursor:pointer; font-weight:600;">
+                    Cancel
+                </button>
+                <button type="submit" id="submitBtn"
+                        style="padding:10px 24px; background:#3b82f6; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div id="deleteModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+    <div style="background:white; border-radius:16px; padding:30px; width:400px; text-align:center;">
+        <div style="font-size:50px; margin-bottom:15px;">🗑️</div>
+        <h3 style="margin:0 0 10px; font-size:20px;">Delete Medicine?</h3>
+        <p style="color:#888; margin-bottom:25px;">Are you sure you want to delete this medicine?</p>
+        <form method="post" id="deleteForm">
+            <input type="hidden" name="id" id="deleteId" />
+            <div style="display:flex; gap:10px; justify-content:center;">
+                <button type="button" onclick="closeDeleteModal()"
+                        style="padding:10px 24px; border:1px solid #e2e8f0; border-radius:8px; background:white; cursor:pointer; font-weight:600;">
+                    Cancel
+                </button>
+                <button type="submit"
+                        style="padding:10px 24px; background:#ef4444; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">
+                    Delete
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div style="min-height:100vh; background:#eef2ff; padding:30px; font-family:'Segoe UI',sans-serif;">
+
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+        <div>
+            <h2 style="font-size:28px; font-weight:700; margin:0;">Manage Medicines</h2>
+            <p style="color:#888; margin:5px 0 0;">View and manage all available medicines</p>
+        </div>
+        <button onclick="openAddModal()"
+                style="background:#3b82f6; color:white; padding:12px 24px; border-radius:10px; border:none; cursor:pointer; font-weight:600; font-size:15px;">
+            + Add New Medicine
+        </button>
+    </div>
+
+    <!-- Search -->
+    <div style="background:white; border-radius:16px; padding:20px; margin-bottom:20px; box-shadow:0 2px 10px rgba(0,0,0,0.06);">
+        <form method="get">
+            <input name="SearchTerm" value="@Model.SearchTerm"
+                   placeholder="🔍 Search for medicine..."
+                   style="width:100%; padding:12px 20px; border:1px solid #e2e8f0; border-radius:10px; font-size:15px; outline:none; box-sizing:border-box;" />
+        </form>
+    </div>
+
+    <!-- Table -->
+    <div style="background:white; border-radius:16px; padding:25px; box-shadow:0 2px 10px rgba(0,0,0,0.06);">
+        <table style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr style="border-bottom:2px solid #f1f5f9;">
+                    <th style="text-align:left; padding:12px; color:#888; font-weight:600;">Medicine Name</th>
+                    <th style="text-align:left; padding:12px; color:#888; font-weight:600;">Category</th>
+                    <th style="text-align:left; padding:12px; color:#888; font-weight:600;">Price</th>
+                    <th style="text-align:left; padding:12px; color:#888; font-weight:600;">Stock</th>
+                    <th style="text-align:left; padding:12px; color:#888; font-weight:600;">Status</th>
+                    <th style="text-align:left; padding:12px; color:#888; font-weight:600;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var medicine in Model.Medicines)
+                {
+                    <tr style="border-bottom:1px solid #f1f5f9;">
+                        <td style="padding:16px; font-weight:600;">@medicine.Name</td>
+                        <td style="padding:16px; color:#666;">@medicine.CategoryName</td>
+                        <td style="padding:16px;">@medicine.Price.ToString("N0") EGP</td>
+                        <td style="padding:16px;">@medicine.Stock</td>
+                        <td style="padding:16px;">
+                            @if (medicine.IsAvailable && medicine.Stock > 0)
+                            {
+                                <span style="background:#dcfce7; color:#16a34a; padding:5px 14px; border-radius:20px; font-size:13px;">Available</span>
+                            }
+                            else
+                            {
+                                <span style="background:#fee2e2; color:#dc2626; padding:5px 14px; border-radius:20px; font-size:13px;">Out of Stock</span>
+                            }
+                        </td>
+                        <td style="padding:16px;">
+                            <div style="display:flex; gap:8px;">
+                              <button onclick="openEditModal(
+                              @medicine.Id, 
+                               '@medicine.Name', 
+                                  '@Html.Raw(medicine.Description ?? "")', 
+                                     @medicine.Price, 
+                                      @medicine.Stock, 
+                                        '@medicine.Manufacturer', 
+                                             @medicine.RequiresPrescription.ToString().ToLower(),
+                                      @medicine.CategoryId)"
+                                  style="background:#eff6ff; color:#3b82f6; border:none; width:36px; height:36px; border-radius:8px; cursor:pointer; font-size:16px;">✏️
+                                   </button>
+                                <button onclick="openDeleteModal(@medicine.Id)"
+                                        style="background:#fff1f2; color:#ef4444; border:none; width:36px; height:36px; border-radius:8px; cursor:pointer; font-size:16px;">
+                                    🗑️
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<script>
+     function openAddModal() {
+    document.getElementById('modalTitle').innerText = 'Add New Medicine';
+    document.getElementById('medicineForm').setAttribute('action', '?handler=Create');
+    document.getElementById('medicineId').value = 0;
+    document.getElementById('Medicine_Name').value = '';
+    document.getElementById('Medicine_Description').value = '';
+    document.getElementById('Medicine_Price').value = '';
+    document.getElementById('Medicine_Stock').value = 0;
+    document.getElementById('Medicine_Manufacturer').value = '';
+    document.getElementById('Medicine_RequiresPrescription').checked = false;
+    document.getElementById('Medicine_CategoryId').value = '';
+    showModal('medicineModal');
+}
+
+
+   function openEditModal(id, name, description, price, stock, manufacturer, requiresPrescription, categoryId) {
+    document.getElementById('modalTitle').innerText = 'Edit Medicine';
+    document.getElementById('medicineForm').setAttribute('action', '?handler=Edit');
+    document.getElementById('medicineId').value = id;
+    document.getElementById('Medicine_Name').value = name;
+    document.getElementById('Medicine_Description').value = description;
+    document.getElementById('Medicine_Price').value = price;
+    document.getElementById('Medicine_Stock').value = stock;
+    document.getElementById('Medicine_Manufacturer').value = manufacturer;
+    document.getElementById('Medicine_RequiresPrescription').checked = requiresPrescription;
+    document.getElementById('Medicine_CategoryId').value = categoryId;
+    showModal('medicineModal');
+}
+
+    function openDeleteModal(id) {
+        document.getElementById('deleteId').value = id;
+        document.getElementById('deleteForm').setAttribute('action', '?handler=Delete');
+        showModal('deleteModal');
+    }
+
+    function showModal(id) {
+        const modal = document.getElementById(id);
+        modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('medicineModal').style.display = 'none';
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+    }
+        window.onload = function () {
+        var errors = document.querySelectorAll('[data-valmsg-for]');
+        var hasErrors = false;
+        errors.forEach(function (el) {
+            if (el.innerText.trim() !== '') hasErrors = true;
+        });
+        if (hasErrors) {
+            showModal('medicineModal');
+        }
+    }
+
+</script>
