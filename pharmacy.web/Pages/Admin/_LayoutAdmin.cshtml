@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Pharmacy System</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Admin CSS -->
+    <link rel="stylesheet" href="~/css/admin.css" />
+    <style>
+            body {
+                margin: 0;
+                font-family: 'Plus Jakarta Sans', sans-serif;
+                background: #f5f7fb;
+            }
+
+            /* ===== NAVBAR ===== */
+            .navbar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 14px 40px;
+                background: #fff;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+            }
+
+            /* ===== BRAND ===== */
+            .navbar-brand {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-weight: 700;
+                font-size: 18px;
+                color: #1e293b;
+                text-decoration: none;
+            }
+
+                .navbar-brand svg {
+                    color: #2563eb;
+                }
+
+            /* ===== LINKS ===== */
+            .navbar-links {
+                list-style: none;
+                display: flex;
+                gap: 28px;
+                margin: 0;
+                padding: 0;
+            }
+
+                .navbar-links li a {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    text-decoration: none;
+                    color: #64748b;
+                    font-weight: 500;
+                    font-size: 14px;
+                    padding: 8px 10px;
+                    border-radius: 8px;
+                    transition: all 0.2s ease;
+                }
+
+                    /* hover */
+                    .navbar-links li a:hover {
+                        background: #f1f5f9;
+                        color: #0f172a;
+                    }
+
+                    /* active tab */
+                    .navbar-links li a.active {
+                        color: #2563eb;
+                        background: #eff6ff;
+                        font-weight: 600;
+                    }
+
+                /* icons */
+                .navbar-links i {
+                    font-size: 14px;
+                }
+    </style>
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+
+        <!-- Brand / Logo -->
+        <a href="/Admin/Index" class="navbar-brand">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.2"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z" />
+                <line x1="12" y1="8" x2="12" y2="16" />
+                <line x1="8" y1="12" x2="16" y2="12" />
+            </svg>
+            Pharmacy System
+        </a>
+
+        <!-- Nav Links -->
+        <ul class="navbar-links">
+
+            <li>
+                <a href="/Admin/Index"
+                       class="@(ViewContext.RouteData.Values["page"]?.ToString()?.Contains("Admin/Index") == true ? "active" : "")">
+                    <i class="fa-solid fa-table-cells-large"></i>
+                    Dashboard
+                </a>
+            </li>
+
+            <li>
+                <a href="/Admin/Users"
+                       class="@(ViewContext.RouteData.Values["page"]?.ToString()?.Contains("Admin/Users") == true ? "active" : "")">
+                    <i class="fa-solid fa-users"></i>
+                    Users
+                </a>
+            </li>
+
+            <li>
+                <a href="/Admin/Pharmacies"
+                       class="@(ViewContext.RouteData.Values["page"]?.ToString()?.Contains("Admin/Pharmacies") == true ? "active" : "")">
+                    <i class="fa-solid fa-hospital"></i>
+                    Pharmacies
+                </a>
+            </li>
+
+            <li>
+                <a href="/Admin/Reports"
+                       class="@(ViewContext.RouteData.Values["page"]?.ToString()?.Contains("Admin/Reports") == true ? "active" : "")">
+                    <i class="fa-solid fa-chart-bar"></i>
+                    Reports
+                </a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+    <!-- ===== PAGE CONTENT ===== -->
+    @RenderBody()
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

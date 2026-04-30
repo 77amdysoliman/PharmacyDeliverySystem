@@ -1,0 +1,107 @@
+﻿@page
+@model pharmacy.web.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "_LayoutAdmin";
+}
+
+<div class="admin-container">
+
+    <!-- Header -->
+    <div class="header">
+        <h2>Admin Dashboard</h2>
+        <p>System overview</p>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="cards">
+
+        <div class="card">
+            <div class="icon blue">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <p>Total Users</p>
+            <h3>@Model.Dashboard.TotalUsers.ToString("N0")</h3>
+        </div>
+
+        <div class="card">
+            <div class="icon green">
+                <i class="fa-solid fa-hospital"></i>
+            </div>
+            <p>Registered Pharmacies</p>
+            <h3>@Model.Dashboard.TotalPharmacies</h3>
+        </div>
+
+        <div class="card">
+            <div class="icon purple">
+                <i class="fa-solid fa-cart-shopping"></i>
+            </div>
+            <p>Total Orders</p>
+            <h3>@Model.Dashboard.TotalOrders.ToString("N0")</h3>
+        </div>
+
+        <div class="card">
+            <div class="icon yellow">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <p>Total Revenue</p>
+            <h3>@Model.Dashboard.TotalRevenue.ToString("N0") EGP</h3>
+        </div>
+
+    </div>
+
+    <!-- Bottom: Recent Activity + Quick Stats -->
+    <div class="bottom">
+
+        <!-- Recent Activity -->
+        <div class="recent">
+            <h4>Recent Activity</h4>
+
+            @if (Model.Dashboard.RecentActivities != null && Model.Dashboard.RecentActivities.Any())
+            {
+                @foreach (var item in Model.Dashboard.RecentActivities)
+                {
+                    <div class="activity">
+                        <div>
+                            <strong>@item.Title</strong>
+                            <p>@item.Time</p>
+                        </div>
+                        <span class="dot"></span>
+                    </div>
+                }
+            }
+            else
+            {
+                <p style="color:#8a93a8; font-size:0.875rem;">No activity yet</p>
+            }
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="stats">
+            <h4>Quick Stats</h4>
+
+            <div class="stat blue">
+                <span>Today's Orders</span>
+                <strong>@Model.Dashboard.TodayOrders</strong>
+            </div>
+
+            <div class="stat green">
+                <span>Active Users</span>
+                <strong>@Model.Dashboard.ActiveUsers</strong>
+            </div>
+
+            <div class="stat purple">
+                <span>Active Pharmacies</span>
+                <strong>@Model.Dashboard.ActivePharmacies</strong>
+            </div>
+
+            <div class="stat yellow">
+                <span>Average Rating</span>
+                <strong>@Model.Dashboard.AvgRating.ToString("F1") ⭐</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
