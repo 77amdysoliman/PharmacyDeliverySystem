@@ -1,11 +1,6 @@
 ﻿using pharmacy.Application.DTOs;
 using pharmacy.Application.Interfaces;
 using pharmacy.domin.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace pharmacy.Application.Sevices
 {
@@ -18,10 +13,10 @@ namespace pharmacy.Application.Sevices
             _unitOfWork = unitOfWork;
         }
 
-        // بيجيب كل الصيدليات
         public async Task<IEnumerable<PharmacyDto>> GetAllPharmaciesAsync()
         {
             var pharmacies = await _unitOfWork.Pharmacies.GetAllAsync();
+
             return pharmacies.Select(p => new PharmacyDto
             {
                 Id = p.Id,
@@ -36,11 +31,11 @@ namespace pharmacy.Application.Sevices
             });
         }
 
-        // بيجيب صيدلية بالـ Id
         public async Task<PharmacyDto?> GetPharmacyByIdAsync(int id)
         {
             var p = await _unitOfWork.Pharmacies.GetByIdAsync(id);
             if (p == null) return null;
+
             return new PharmacyDto
             {
                 Id = p.Id,
@@ -55,7 +50,57 @@ namespace pharmacy.Application.Sevices
             };
         }
 
-        // بيجيب أقرب صيدليات فيها دواء معين
+        // ✅ UPDATE
+        public async Task UpdatePharmacyAsync(
+            int id,
+            string name,
+            string address,
+            string phone,
+            double rating,
+            bool isOpen)
+        {
+            var pharmacy = await _unitOfWork.Pharmacies.GetByIdAsync(id);
+
+            if (pharmacy == null)
+                throw new Exception("Pharmacy not found");
+
+            pharmacy.Name = name;
+            pharmacy.Address = address;
+            pharmacy.Phone = phone;
+            pharmacy.Rating = rating;
+            pharmacy.IsOpen = isOpen;
+
+            _unitOfWork.Pharmacies.Update(pharmacy);
+            await _unitOfWork.CompleteAsync();
+        }
+
+        // ✅ APPROVE
+        public async Task ApprovePharmacyAsync(int id)
+        {
+            var pharmacy = await _unitOfWork.Pharmacies.GetByIdAsync(id);
+
+            if (pharmacy == null)
+                return;
+
+            pharmacy.IsOpen = true;
+
+            _unitOfWork.Pharmacies.Update(pharmacy);
+            await _unitOfWork.CompleteAsync();
+        }
+
+        // ✅ DELETE
+        public async Task DeletePharmacyAsync(int id)
+        {
+            var pharmacy = await _unitOfWork.Pharmacies.GetByIdAsync(id);
+
+            if (pharmacy == null)
+                return;
+
+            _unitOfWork.Pharmacies.Delete(pharmacy);
+            await _unitOfWork.CompleteAsync();
+        }
+
+        // NEAREST
         public async Task<IEnumerable<PharmacyDto>> GetNearestPharmaciesAsync(
             double latitude,
             double longitude,
@@ -64,7 +109,6 @@ namespace pharmacy.Application.Sevices
             var pharmacyMedicines = await _unitOfWork.PharmacyMedicines.GetAllAsync();
             var pharmacies = await _unitOfWork.Pharmacies.GetAllAsync();
 
-            // بيجيب الصيدليات اللي فيها الدواء ده ومتاح
             var availablePharmacyIds = pharmacyMedicines
                 .Where(pm => pm.MedicineId == medicineId && pm.IsAvailable && pm.Stock > 0)
                 .Select(pm => pm.PharmacyId)
@@ -83,24 +127,24 @@ namespace pharmacy.Application.Sevices
                     ImageUrl = p.ImageUrl,
                     Latitude = p.Latitude,
                     Longitude = p.Longitude,
-                    // حساب المسافة بـ Haversine Formula
                     Distance = CalculateDistance(latitude, longitude, p.Latitude, p.Longitude)
                 })
-                .OrderBy(p => p.Distance)  // ترتيب من الأقرب للأبعد
+                .OrderBy(p => p.Distance)
                 .ToList();
         }
 
-        // Haversine Formula لحساب المسافة بين نقطتين
         private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
         {
-            const double R = 6371; // نصف قطر الأرض بالكيلومتر
+            const double R = 6371;
             var dLat = ToRad(lat2 - lat1);
             var dLon = ToRad(lon2 - lon1);
+
             var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
                     Math.Cos(ToRad(lat1)) * Math.Cos(ToRad(lat2)) *
                     Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+
             var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-            return Math.Round(R * c, 2); // المسافة بالكيلومتر
+            return Math.Round(R * c, 2);
         }
 
         private double ToRad(double deg) => deg * Math.PI / 180;

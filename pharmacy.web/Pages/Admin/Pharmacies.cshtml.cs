@@ -25,27 +25,25 @@ namespace pharmacy.web.Pages.Admin
             {
                 Id = p.Id,
                 Name = p.Name,
-                OwnerName = "—",          // لو ضفت OwnerName للـ PharmacyDto بعدين حطه هنا
+                OwnerName = "—",          
                 Address = p.Address,
                 Phone = p.Phone,
                 Rating = p.Rating,
                 IsActive = p.IsOpen,
-                OrdersCount = 0           // لو ضفت OrdersCount للـ PharmacyDto بعدين حطه هنا
+                OrdersCount = 0           
             }).ToList();
         }
 
         // ✅ Approve Handler
         public async Task<IActionResult> OnPostApproveAsync(int id)
         {
-            // هنا لما تضيف IsApproved للـ Entity بعدين
-            // await _pharmacyService.ApprovePharmacyAsync(id);
+            await _pharmacyService.ApprovePharmacyAsync(id);
             return RedirectToPage();
         }
 
-        // ✅ Delete Handler
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
-            // await _pharmacyService.DeletePharmacyAsync(id);
+            await _pharmacyService.DeletePharmacyAsync(id);
             return RedirectToPage();
         }
 

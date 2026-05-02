@@ -1,24 +1,26 @@
 ﻿using pharmacy.Application.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace pharmacy.Application.Interfaces
 {
     public interface IPharmacyService
     {
-        // بيجيب كل الصيدليات
+        // GET ALL
         Task<IEnumerable<PharmacyDto>> GetAllPharmaciesAsync();
 
-        // بيجيب صيدلية بالـ Id
+        // GET BY ID
         Task<PharmacyDto?> GetPharmacyByIdAsync(int id);
 
-        // بيجيب أقرب صيدليات فيها دواء معين
+        // NEAREST
         Task<IEnumerable<PharmacyDto>> GetNearestPharmaciesAsync(
             double latitude,
             double longitude,
             int medicineId);
+
+        // ✅ ADD THESE
+        Task UpdatePharmacyAsync(int id, string name, string address, string phone, double rating, bool isOpen);
+
+        Task ApprovePharmacyAsync(int id);
+
+        Task DeletePharmacyAsync(int id);
     }
 }

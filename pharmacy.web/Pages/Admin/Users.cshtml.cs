@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using pharmacy.domin.Interfaces;
-using pharmacy.infrastructuree.Data;
 
 namespace pharmacy.web.Pages.Admin
 {
@@ -28,11 +27,12 @@ namespace pharmacy.web.Pages.Admin
                 Email = u.Email,
                 Phone = u.Phone,
                 OrdersCount = orders.Count(o => o.UserId == u.Id),
-                IsActive = orders.Any(o => o.UserId == u.Id)
+
+                // ✅ مظبوطة
+                IsActive = u.IsActive
             }).ToList();
         }
 
-        // ── Delete Handler ──────────────────────────────
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
             var user = await _unitOfWork.Users.GetByIdAsync(id);
@@ -44,7 +44,6 @@ namespace pharmacy.web.Pages.Admin
             return RedirectToPage();
         }
 
-        // ── ViewModel ───────────────────────────────────
         public class UserVM
         {
             public int Id { get; set; }
@@ -54,6 +53,5 @@ namespace pharmacy.web.Pages.Admin
             public int OrdersCount { get; set; }
             public bool IsActive { get; set; }
         }
-
     }
 }

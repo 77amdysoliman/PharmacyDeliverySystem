@@ -1,7 +1,6 @@
 ﻿@page
 @model pharmacy.web.Pages.Admin.UsersModel
 @{
-  
     Layout = "_LayoutAdmin";
 }
 <style>
@@ -19,20 +18,22 @@
         padding: 40px 24px;
     }
 
-    /* ── Header ── */
     .page-title    { font-size: 1.75rem; font-weight: 700; color: #0f172a; }
     .page-subtitle { font-size: 0.875rem; color: #64748b; margin-top: 4px; }
 
-    /* ── Search ── */
     .search-wrapper {
         background: #fff;
         border-radius: 14px;
         padding: 16px 20px;
         margin: 24px 0;
         box-shadow: 0 1px 4px rgba(0,0,0,.06);
+        display: flex;
+        gap: 12px;
+        align-items: center;
     }
 
     .search-box {
+        flex: 1;
         display: flex;
         align-items: center;
         gap: 10px;
@@ -58,7 +59,31 @@
 
     .search-box input::placeholder { color: #94a3b8; }
 
-    /* ── Table Card ── */
+    .filter-btn {
+        padding: 10px 18px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all .2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .filter-btn:hover { border-color: #86efac; color: #16a34a; background: #f0fdf4; }
+
+    .filter-btn.active-filter {
+        background: #dcfce7;
+        color: #16a34a;
+        border-color: #86efac;
+    }
+
     .table-card {
         background: #fff;
         border-radius: 16px;
@@ -66,15 +91,9 @@
         overflow: hidden;
     }
 
-    /* ── Table ── */
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
+    table { width: 100%; border-collapse: collapse; }
 
-    thead tr {
-        border-bottom: 1px solid #f1f5f9;
-    }
+    thead tr { border-bottom: 1px solid #f1f5f9; }
 
     thead th {
         padding: 14px 20px;
@@ -92,7 +111,6 @@
     }
 
     tbody tr:last-child { border-bottom: none; }
-
     tbody tr:hover { background: #f8fafc; }
 
     tbody td {
@@ -105,7 +123,6 @@
     td.name  { font-weight: 700; color: #0f172a; }
     td.count { font-weight: 600; color: #1e293b; }
 
-    /* ── Badge ── */
     .badge {
         display: inline-flex;
         align-items: center;
@@ -119,7 +136,6 @@
     .badge.active   { background: #dcfce7; color: #16a34a; }
     .badge.inactive { background: #fee2e2; color: #dc2626; }
 
-    /* ── Action Buttons ── */
     .actions { display: flex; gap: 8px; }
 
     .icon-btn {
@@ -135,10 +151,8 @@
     }
 
     .icon-btn:active { transform: scale(.95); }
-
     .icon-btn.edit   { background: #eff6ff; color: #2563eb; }
     .icon-btn.edit:hover   { background: #dbeafe; }
-
     .icon-btn.delete { background: #fff1f2; color: #dc2626; }
     .icon-btn.delete:hover { background: #fee2e2; }
 </style>
@@ -148,7 +162,6 @@
     <h2 class="page-title">Manage Users</h2>
     <p class="page-subtitle">View and track all users</p>
 
-    <!-- Search -->
     <div class="search-wrapper">
         <div class="search-box">
             <svg class="search-icon" xmlns="http://www.w3.org/2000/svg"
@@ -158,9 +171,18 @@
             </svg>
             <input id="searchInput" type="text" placeholder="Search for user..." />
         </div>
+
+        <button id="activeFilterBtn" class="filter-btn" title="Show Active Only">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <polyline points="16 11 18 13 22 9"/>
+            </svg>
+            Active Only
+        </button>
     </div>
 
-    <!-- Table -->
     <div class="table-card">
         <table>
             <thead>
@@ -178,7 +200,9 @@
                 @{ int i = 1; }
                 @foreach (var u in Model.Users)
                 {
-                    <tr data-name="@u.Name.ToLower()" data-email="@u.Email.ToLower()">
+                    <tr data-name="@u.Name.ToLower()"
+                        data-email="@u.Email.ToLower()"
+                        data-active="@u.IsActive.ToString().ToLower()">
                         <td class="num">@i</td>
                         <td class="name">@u.Name</td>
                         <td>@u.Email</td>
@@ -213,7 +237,8 @@
                         </td>
                         <td>
                             <div class="actions">
-                                <a asp-page="/Admin/EditUser" asp-route-id="@u.Id" class="icon-btn edit" title="Edit">
+                                <a asp-page="./EditUser" asp-route-id="@u.Id"
+                                   class="icon-btn edit" title="Edit">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
                                          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -243,12 +268,43 @@
 </div>
 
 <script>
-    document.getElementById('searchInput').addEventListener('input', function () {
-        const q = this.value.toLowerCase();
+    let showActiveOnly = false;
+
+    const searchInput = document.getElementById('searchInput');
+    const filterBtn = document.getElementById('activeFilterBtn');
+
+    function applyFilters() {
+        const q = searchInput.value.toLowerCase();
         document.querySelectorAll('#usersTable tr').forEach(row => {
-            const name  = row.getAttribute('data-name')  || '';
-            const email = row.getAttribute('data-email') || '';
-            row.style.display = (name.includes(q) || email.includes(q)) ? '' : 'none';
+            const name   = row.getAttribute('data-name')   || '';
+            const email  = row.getAttribute('data-email')  || '';
+            const active = row.getAttribute('data-active') || '';
+
+            const matchesSearch = name.includes(q) || email.includes(q);
+            const matchesActive = !showActiveOnly || active === 'true';
+
+            row.style.display = (matchesSearch && matchesActive) ? '' : 'none';
         });
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+
+    filterBtn.addEventListener('click', function () {
+        showActiveOnly = !showActiveOnly;
+        this.classList.toggle('active-filter', showActiveOnly);
+        this.innerHTML = showActiveOnly
+            ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                   <circle cx="9" cy="7" r="4"/>
+                   <polyline points="16 11 18 13 22 9"/>
+               </svg> Active Only ✕`
+            : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                   <circle cx="9" cy="7" r="4"/>
+                   <polyline points="16 11 18 13 22 9"/>
+               </svg> Active Only`;
+        applyFilters();
     });
 </script>
