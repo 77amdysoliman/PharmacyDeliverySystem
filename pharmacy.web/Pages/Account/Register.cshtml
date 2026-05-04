@@ -1,0 +1,75 @@
+﻿@page "/Account/Register"
+@model Pharmacy.web.Pages.Account.RegisterModel
+
+<div style="min-height:100vh; background:#eef2ff; display:flex; align-items:center; justify-content:center; font-family:'Segoe UI',sans-serif; padding:20px;">
+    <div style="background:white; border-radius:20px; padding:40px; width:100%; max-width:480px; box-shadow:0 10px 40px rgba(0,0,0,0.1);">
+
+        <!-- Header -->
+        <div style="text-align:center; margin-bottom:30px;">
+            <div style="font-size:40px; margin-bottom:10px;">💊</div>
+            <h2 style="font-size:24px; font-weight:700; margin:0;">Create Account</h2>
+            <p style="color:#888; margin:8px 0 0; font-size:14px;">Join Pharmacy Delivery System</p>
+        </div>
+
+        <form method="post">
+            @Html.AntiForgeryToken()
+
+            <!-- Full Name -->
+            <div style="margin-bottom:16px;">
+                <label style="font-size:13px; font-weight:600; color:#374151;">Full Name *</label>
+                <input asp-for="Input.FullName" placeholder="Enter your full name"
+                       style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:10px; margin-top:6px; font-size:14px; box-sizing:border-box; outline:none;" />
+                <span asp-validation-for="Input.FullName" style="color:#dc2626; font-size:12px; margin-top:4px; display:block;"></span>
+            </div>
+
+            <!-- Email -->
+            <div style="margin-bottom:16px;">
+                <label style="font-size:13px; font-weight:600; color:#374151;">Email *</label>
+                <input asp-for="Input.Email" type="email" placeholder="Enter your email"
+                       style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:10px; margin-top:6px; font-size:14px; box-sizing:border-box; outline:none;" />
+                <span asp-validation-for="Input.Email" style="color:#dc2626; font-size:12px; margin-top:4px; display:block;"></span>
+            </div>
+
+            <!-- Phone -->
+            <div style="margin-bottom:16px;">
+                <label style="font-size:13px; font-weight:600; color:#374151;">Phone</label>
+                <input asp-for="Input.Phone" placeholder="Enter your phone number"
+                       style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:10px; margin-top:6px; font-size:14px; box-sizing:border-box; outline:none;" />
+            </div>
+
+         
+
+            <!-- Password -->
+            <div style="margin-bottom:16px;">
+                <label style="font-size:13px; font-weight:600; color:#374151;">Password *</label>
+                <input asp-for="Input.Password" type="password" placeholder="Min 6 characters"
+                       style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:10px; margin-top:6px; font-size:14px; box-sizing:border-box; outline:none;" />
+                <span asp-validation-for="Input.Password" style="color:#dc2626; font-size:12px; margin-top:4px; display:block;"></span>
+            </div>
+
+            <!-- Confirm Password -->
+            <div style="margin-bottom:24px;">
+                <label style="font-size:13px; font-weight:600; color:#374151;">Confirm Password *</label>
+                <input asp-for="Input.ConfirmPassword" type="password" placeholder="Repeat your password"
+                       style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:10px; margin-top:6px; font-size:14px; box-sizing:border-box; outline:none;" />
+                <span asp-validation-for="Input.ConfirmPassword" style="color:#dc2626; font-size:12px; margin-top:4px; display:block;"></span>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit"
+                    style="width:100%; background:#2563eb; color:white; border:none; padding:14px; border-radius:10px; font-size:15px; font-weight:600; cursor:pointer;">
+                Create Account
+            </button>
+
+            <!-- Login Link -->
+            <p style="text-align:center; margin-top:20px; font-size:14px; color:#888;">
+                Already have an account?
+                <a href="/Account/Login" style="color:#2563eb; font-weight:600; text-decoration:none;">Login</a>
+            </p>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

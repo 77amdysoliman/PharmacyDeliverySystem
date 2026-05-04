@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using pharmacy.Application.DTOs;
 using pharmacy.Application.Interfaces;
 
-namespace pharmacy.web.Pages.Dashbord
+namespace Pharmacy.web.Pages.Dashboard
 {
     public class OrderModel : PageModel
     {

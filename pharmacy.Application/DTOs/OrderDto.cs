@@ -9,6 +9,8 @@ namespace pharmacy.Application.DTOs
     public class OrderDto
     {
         public int Id { get; set; }
+        public int UserId { get; set; }     
+        public int PharmacyId { get; set; }
         public DateTime OrderDate { get; set; }
         public string Status { get; set; }
         public decimal TotalPrice { get; set; }

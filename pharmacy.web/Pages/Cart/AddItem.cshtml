@@ -1,0 +1,43 @@
+﻿@page
+@model pharamcy.web.Pages.Cart.AddItemModel
+@{
+    ViewData["Title"] = "Add Medicine";
+}
+
+<div style="min-height:100vh; background:#eef1f8; padding:40px 16px; font-family:'Segoe UI',sans-serif;">
+    <div style="max-width:500px; margin:0 auto; background:white; border-radius:20px; padding:40px 32px; box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+
+        <div style="text-align:center; margin-bottom:32px;">
+            <div style="font-size:48px;">💊</div>
+            <h1 style="font-size:24px; font-weight:700; color:#1a1a2e;">Add Medicine</h1>
+            <p style="color:#6b7280;">Add medicine to your cart</p>
+        </div>
+
+        <form method="post">
+            <input type="hidden" asp-for="PharmacyId" />
+
+            <div style="margin-bottom:20px;">
+                <label style="font-weight:600; color:#374151; display:block; margin-bottom:8px;">Medicine Name</label>
+                <input asp-for="MedicineName" placeholder="e.g. Panadol"
+                       style="width:100%; padding:12px 16px; border:1.5px solid #e5e7eb; border-radius:10px; font-size:15px; outline:none; box-sizing:border-box;" />
+            </div>
+
+            <div style="margin-bottom:28px;">
+                <label style="font-weight:600; color:#374151; display:block; margin-bottom:8px;">Quantity</label>
+                <input asp-for="Quantity" type="number" min="1"
+                       style="width:100%; padding:12px 16px; border:1.5px solid #e5e7eb; border-radius:10px; font-size:15px; outline:none; box-sizing:border-box;" />
+            </div>
+
+            <div style="display:flex; gap:12px;">
+                <a asp-page="/NearestPharmacies"
+                       style="flex:1; background:white; color:#2563eb; border:2px solid #2563eb; border-radius:12px; padding:13px; font-size:15px; font-weight:600; text-align:center; text-decoration:none;">
+                    ← Back
+                </a>
+                <button type="submit"
+                        style="flex:1; background:#2563eb; color:white; border:none; border-radius:12px; padding:14px; font-size:15px; font-weight:700; cursor:pointer;">
+                    Add to Cart 🛒
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

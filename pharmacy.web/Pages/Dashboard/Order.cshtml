@@ -1,5 +1,9 @@
-﻿@page  "/Orders"
-@model pharmacy.web.Pages.Dashbord.OrderModel
+﻿@page  
+@model Pharmacy.web.Pages.Dashboard.OrderModel
+@{
+    Layout = "_LayoutDashboard";
+}
+
 @{
     @if (TempData["SuccessMessage"] != null)
     {

@@ -159,6 +159,8 @@ namespace pharmacy.Application.Sevices
                 TotalPrice = orderDto.Items.Sum(i => i.Quantity * i.UnitPrice),
                 DeliveryAddress = orderDto.DeliveryAddress,
                 Notes = orderDto.Notes,
+                UserId = orderDto.UserId,     
+                PharmacyId = orderDto.PharmacyId, 
                 UserId = orderDto.UserId,
                 PharmacyId = orderDto.PharmacyId,
             };

@@ -57,6 +57,9 @@ namespace pharmacy.Application.Services
         public async Task<IEnumerable<MedicineDto>> SearchMedicinesAsync(string name)
         {
             var medicines = await _unitOfWork.Medicines.GetAllAsync();
+            var pharmacyMedicines = await _unitOfWork.PharmacyMedicines.GetAllAsync();
+            var categories = await _unitOfWork.Categories.GetAllAsync();
+
             return medicines
                 .Where(m => m.Name.Contains(name, StringComparison.OrdinalIgnoreCase))
                 .Select(m => new MedicineDto
@@ -68,6 +71,13 @@ namespace pharmacy.Application.Services
                     ImageUrl = m.ImageUrl,
                     RequiresPrescription = m.RequiresPrescription,
                     Manufacturer = m.Manufacturer,
+                    CategoryId = m.CategoryId,
+                    CategoryName = categories.FirstOrDefault(c => c.Id == m.CategoryId)?.Name ?? "",
+                    IsAvailable = pharmacyMedicines
+                        .Any(pm => pm.MedicineId == m.Id && pm.IsAvailable),
+                    Stock = pharmacyMedicines
+                        .Where(pm => pm.MedicineId == m.Id)
+                        .Sum(pm => pm.Stock)
                 });
         }
 
