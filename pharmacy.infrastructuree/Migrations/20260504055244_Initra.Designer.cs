@@ -12,7 +12,7 @@ using pharmacy.infrastructuree.Data;
 namespace pharmacy.infrastructuree.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260502160558_Initra")]
+    [Migration("20260504055244_Initra")]
     partial class Initra
     {
         /// <inheritdoc />

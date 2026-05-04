@@ -159,8 +159,8 @@ namespace pharmacy.Application.Sevices
                 TotalPrice = orderDto.Items.Sum(i => i.Quantity * i.UnitPrice),
                 DeliveryAddress = orderDto.DeliveryAddress,
                 Notes = orderDto.Notes,
-                UserId = 1, // هنغيره لما نضيف Identity
-                PharmacyId = 1, // هنغيره لما نربط الـ UI
+                UserId = orderDto.UserId,
+                PharmacyId = orderDto.PharmacyId,
             };
 
             await _unitOfWork.Orders.AddAsync(order);

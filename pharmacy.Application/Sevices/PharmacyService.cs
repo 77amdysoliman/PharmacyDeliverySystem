@@ -1,5 +1,6 @@
 ﻿using pharmacy.Application.DTOs;
 using pharmacy.Application.Interfaces;
+using pharmacy.domin.Entites;
 using pharmacy.domin.Interfaces;
 
 namespace pharmacy.Application.Sevices
@@ -48,6 +49,14 @@ namespace pharmacy.Application.Sevices
                 Latitude = p.Latitude,
                 Longitude = p.Longitude,
             };
+        }
+
+        // ✅ ADD
+        public async Task AddPharmacyAsync(string name, string address, string phone)
+        {
+            var newPharmacy = new Pharmacy { Name = name, Address = address, Phone = phone, IsOpen = false };
+            await _unitOfWork.Pharmacies.AddAsync(newPharmacy);
+            await _unitOfWork.CompleteAsync();
         }
 
         // ✅ UPDATE

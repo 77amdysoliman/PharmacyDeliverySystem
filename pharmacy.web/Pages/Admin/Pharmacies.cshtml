@@ -13,10 +13,37 @@
 
     .page-wrapper { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
 
-    .page-header { margin-bottom: 28px; }
-    .page-title { font-size: 1.75rem; font-weight: 700; }
+    /* ─── Header Row ─────────────────────────────────────────────── */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .page-header-text {}
+    .page-title   { font-size: 1.75rem; font-weight: 700; }
     .page-subtitle { font-size: 0.9rem; color: #64748b; margin-top: 4px; }
 
+    /* ─── Add Button ─────────────────────────────────────────────── */
+    .btn-add-new {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #2563eb;
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: background 0.2s, transform 0.15s;
+        white-space: nowrap;
+    }
+    .btn-add-new:hover { background: #1d4ed8; transform: translateY(-1px); }
+
+    /* ─── Search ─────────────────────────────────────────────────── */
     .search-wrapper {
         background: #fff; border-radius: 14px; padding: 16px 20px;
         margin-bottom: 28px; box-shadow: 0 1px 4px rgba(0,0,0,.06);
@@ -25,8 +52,9 @@
         display: flex; gap: 10px; border: 1.5px solid #e2e8f0;
         border-radius: 10px; padding: 10px 16px; background: #f8fafc; align-items: center;
     }
-    .search-box input { border: none; outline: none; width: 100%; background: transparent; }
+    .search-box input { border: none; outline: none; width: 100%; background: transparent; font-family: 'DM Sans', sans-serif; }
 
+    /* ─── Grid ───────────────────────────────────────────────────── */
     .pharmacy-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
 
     .pharmacy-card {
@@ -43,7 +71,6 @@
 
     .owner-name { font-size: 0.85rem; color: #64748b; }
 
-    /* ✅ Location row */
     .location-row {
         display: flex; align-items: center; gap: 6px;
         font-size: 0.85rem; color: #475569; margin-top: 2px;
@@ -60,7 +87,7 @@
         padding: 10px; border: none; border-radius: 10px; cursor: pointer;
         font-weight: 600; font-size: 0.875rem; display: flex;
         align-items: center; justify-content: center; gap: 6px;
-        text-decoration: none;
+        text-decoration: none; font-family: 'DM Sans', sans-serif;
     }
     .btn-edit   { background: #2563eb; color: #fff; }
     .btn-edit:hover { background: #1d4ed8; }
@@ -71,16 +98,34 @@
         padding: 10px; border-radius: 10px; border: none;
         cursor: pointer; font-weight: 600; font-size: 0.875rem;
         display: flex; align-items: center; justify-content: center; gap: 6px;
+        font-family: 'DM Sans', sans-serif;
     }
     .btn-approve:hover { background: #15803d; }
+
+    /* ─── Empty State ────────────────────────────────────────────── */
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 60px 20px;
+        color: #94a3b8;
+    }
+    .empty-state i { font-size: 2.5rem; margin-bottom: 12px; display: block; }
 </style>
 
 <div class="page-wrapper">
+
+    <!-- Header + Add Button -->
     <div class="page-header">
-        <h2 class="page-title">Manage Pharmacies</h2>
-        <p class="page-subtitle">View and track all registered pharmacies</p>
+        <div class="page-header-text">
+            <h2 class="page-title">Manage Pharmacies</h2>
+            <p class="page-subtitle">View and track all registered pharmacies</p>
+        </div>
+        <a asp-page="/Admin/AddPharmacy" class="btn-add-new">
+            <i class="fa-solid fa-plus"></i> Add New Pharmacy
+        </a>
     </div>
 
+    <!-- Search -->
     <div class="search-wrapper">
         <div class="search-box">
             <i class="fa fa-search" style="color:#94a3b8;"></i>
@@ -88,7 +133,17 @@
         </div>
     </div>
 
+    <!-- Cards Grid -->
     <div class="pharmacy-grid">
+
+        @if (!Model.Pharmacies.Any())
+        {
+            <div class="empty-state">
+                <i class="fa-solid fa-store-slash"></i>
+                <p>No pharmacies found. Add one to get started.</p>
+            </div>
+        }
+
         @foreach (var p in Model.Pharmacies)
         {
             <div class="pharmacy-card" data-name="@p.Name.ToLower()">
@@ -108,7 +163,6 @@
                     }
                 </div>
 
-                @* ✅ Location row *@
                 @if (!string.IsNullOrEmpty(p.Address))
                 {
                     <div class="location-row">
@@ -133,12 +187,10 @@
                 </div>
 
                 <div class="card-actions">
-                    @* ✅ Edit - fixed as proper anchor button *@
                     <a asp-page="/Admin/EditPharmacy" asp-route-id="@p.Id" class="btn btn-edit">
                         <i class="fa-solid fa-pen-to-square"></i> Edit
                     </a>
 
-                    @* ✅ Delete - uses form POST with AntiForgery token *@
                     <form method="post" asp-page-handler="Delete" style="margin:0;">
                         <input type="hidden" name="id" value="@p.Id" />
                         <button type="submit" class="btn btn-delete" style="width:100%;"
@@ -148,7 +200,6 @@
                     </form>
                 </div>
 
-                @* ✅ Approve - only shown for inactive pharmacies *@
                 @if (!p.IsActive)
                 {
                     <form method="post" asp-page-handler="Approve" style="margin:0;">

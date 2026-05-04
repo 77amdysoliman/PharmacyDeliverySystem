@@ -7,7 +7,6 @@ namespace pharmacy.web.Pages.Admin
 {
     public class PharmaciesModel : PageModel
     {
-
         private readonly IPharmacyService _pharmacyService;
 
         public List<PharmacyAdminVM> Pharmacies { get; set; } = new();
@@ -25,12 +24,12 @@ namespace pharmacy.web.Pages.Admin
             {
                 Id = p.Id,
                 Name = p.Name,
-                OwnerName = "—",          
+                OwnerName = "—",
                 Address = p.Address,
                 Phone = p.Phone,
                 Rating = p.Rating,
                 IsActive = p.IsOpen,
-                OrdersCount = 0           
+                OrdersCount = 0
             }).ToList();
         }
 
@@ -41,6 +40,7 @@ namespace pharmacy.web.Pages.Admin
             return RedirectToPage();
         }
 
+        // ✅ Delete Handler
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
             await _pharmacyService.DeletePharmacyAsync(id);
@@ -59,6 +59,5 @@ namespace pharmacy.web.Pages.Admin
             public bool IsActive { get; set; }
             public int OrdersCount { get; set; }
         }
-
     }
 }

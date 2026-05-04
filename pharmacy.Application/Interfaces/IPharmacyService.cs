@@ -22,5 +22,6 @@ namespace pharmacy.Application.Interfaces
         Task ApprovePharmacyAsync(int id);
 
         Task DeletePharmacyAsync(int id);
+        Task AddPharmacyAsync(string name, string address, string phone);
     }
 }
