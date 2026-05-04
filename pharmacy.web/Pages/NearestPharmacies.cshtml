@@ -1,0 +1,64 @@
+﻿@page
+@model Pharmacy.Web.Pages.NearestPharmaciesModel
+@{
+    ViewData["Title"] = "Nearest Pharmacies";
+}
+
+<div style="min-height:100vh; background:#eef1f8; padding:40px 16px; font-family:'Segoe UI',sans-serif;">
+
+    <div style="text-align:center; margin-bottom:32px;">
+        <h1 style="font-size:28px; font-weight:700; color:#1a1a2e;">Nearest Pharmacies</h1>
+        <p style="color:#6b7280;">Choose the pharmacy that suits you</p>
+    </div>
+
+    <div style="max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:16px;">
+        @foreach (var item in Model.Pharmacies)
+        {
+            var p = item.Pharmacy;
+            var dist = item.Distance;
+
+            <div style="background:#fff; border-radius:16px; padding:20px 24px; box-shadow:0 2px 12px rgba(0,0,0,0.07);">
+
+                <!-- Name + Status -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <span style="font-size:18px; font-weight:700; color:#1a1a2e;">@p.Name</span>
+                    @if (p.IsOpen)
+                    {
+                        <span style="background:#d1fae5; color:#059669; font-size:12px; font-weight:600; padding:4px 10px; border-radius:20px;">
+                            ● Open Now
+                        </span>
+                    }
+                    else
+                    {
+                        <span style="background:#fee2e2; color:#dc2626; font-size:12px; font-weight:600; padding:4px 10px; border-radius:20px;">
+                            ● Closed
+                        </span>
+                    }
+                </div>
+
+                <!-- Info -->
+                <div style="display:flex; flex-direction:column; gap:5px; margin-bottom:16px; font-size:14px; color:#6b7280;">
+                    <span>📍 @p.Address</span>
+                    <span style="color:#2563eb; font-weight:600;">🧭 @dist km away</span>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>📞 @p.Phone</span>
+                        <span style="color:#d97706; font-weight:600;">⭐ @p.Rating.ToString("0.0")</span>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div style="display:flex; gap:12px;">
+                    <a asp-page="/Cart/AddItem" asp-route-pharmacyId="@p.Id"
+                           style="flex:1; background:#2563eb; color:white; border-radius:10px; padding:12px; font-size:15px; font-weight:600; text-align:center; text-decoration:none;">
+                        Order Now
+                    </a>
+                    <a href="https://www.google.com/maps?q=@p.Latitude,@p.Longitude" target="_blank"
+                           style="background:white; color:#2563eb; border:2px solid #2563eb; border-radius:10px; padding:12px 18px; font-size:15px; font-weight:600; text-decoration:none;">
+                        View on Map
+                    </a>
+                </div>
+
+            </div>
+        }
+    </div>
+</div>
