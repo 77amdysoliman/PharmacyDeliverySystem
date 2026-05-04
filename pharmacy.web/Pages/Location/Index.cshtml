@@ -1,0 +1,105 @@
+﻿@page "/Location"
+@model Pharmacy.web.Pages.Location.IndexModel
+
+<div style="min-height:100vh; background:#eef2ff; display:flex; align-items:center; justify-content:center; font-family:'Segoe UI',sans-serif; padding:20px;">
+    <div style="background:white; border-radius:24px; padding:40px; width:100%; max-width:520px; box-shadow:0 10px 40px rgba(0,0,0,0.1);">
+
+        <!-- Icon -->
+        <div style="text-align:center; margin-bottom:25px;">
+            <div style="width:80px; height:80px; background:#eff6ff; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; font-size:36px;">
+                📍
+            </div>
+            <h2 style="font-size:24px; font-weight:700; margin:0; color:#0f172a;">Set Your Location</h2>
+            <p style="color:#94a3b8; font-size:14px; margin:8px 0 0;">We'll use your location to find the nearest pharmacy</p>
+        </div>
+
+        <!-- GPS Button -->
+        <button onclick="getGPSLocation()"
+                style="width:100%; background:#059669; color:white; border:none; padding:14px; border-radius:12px; font-size:15px; font-weight:600; cursor:pointer; margin-bottom:20px; display:flex; align-items:center; justify-content:center; gap:8px;">
+            📡 Use My Current Location (GPS)
+        </button>
+
+        <!-- GPS Status -->
+        <div id="gpsStatus" style="display:none; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:12px 16px; margin-bottom:20px; font-size:13px; color:#16a34a; text-align:center;">
+            ✅ Location detected successfully!
+        </div>
+
+        <!-- Divider -->
+        <div style="display:flex; align-items:center; margin-bottom:20px;">
+            <div style="flex:1; height:1px; background:#e2e8f0;"></div>
+            <span style="padding:0 15px; color:#94a3b8; font-size:13px;">or</span>
+            <div style="flex:1; height:1px; background:#e2e8f0;"></div>
+        </div>
+
+        <!-- Manual Address -->
+        <div style="margin-bottom:24px;">
+            <label style="font-size:13px; font-weight:600; color:#374151;">Enter Address Manually</label>
+            <div style="display:flex; align-items:center; border:1.5px solid #e2e8f0; border-radius:10px; margin-top:6px; overflow:hidden;">
+                <span style="padding:12px 14px; font-size:16px;">🔍</span>
+                <input type="text" id="addressInput" placeholder="Cairo, Heliopolis, Street..."
+                       oninput="checkAddress(this.value)"
+                       style="flex:1; border:none; outline:none; font-size:14px; padding:12px 0; background:transparent; color:#374151;" />
+            </div>
+        </div>
+
+        <!-- Confirm Button -->
+        <form method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="latInput" name="Latitude" />
+            <input type="hidden" id="lngInput" name="Longitude" />
+            <input type="hidden" id="addressHidden" name="Address" />
+
+            <button type="submit" id="confirmBtn" disabled
+                    style="width:100%; background:#94a3b8; color:white; border:none; padding:14px; border-radius:12px; font-size:15px; font-weight:600; cursor:not-allowed; transition:0.3s;">
+                Confirm Location
+            </button>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    let locationSelected = false;
+
+    // GPS
+    function getGPSLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    document.getElementById('latInput').value = position.coords.latitude;
+                    document.getElementById('lngInput').value = position.coords.longitude;
+                    document.getElementById('addressHidden').value = 'GPS Location';
+                    document.getElementById('gpsStatus').style.display = 'block';
+                    enableConfirmBtn();
+                },
+                function (error) {
+                    alert('Could not get your location. Please enter it manually.');
+                }
+            );
+        }
+    }
+
+    // Manual Address
+    function checkAddress(value) {
+        document.getElementById('addressHidden').value = value;
+        if (value.length > 5) {
+            enableConfirmBtn();
+        } else {
+            disableConfirmBtn();
+        }
+    }
+
+    function enableConfirmBtn() {
+        const btn = document.getElementById('confirmBtn');
+        btn.disabled = false;
+        btn.style.background = '#2563eb';
+        btn.style.cursor = 'pointer';
+    }
+
+    function disableConfirmBtn() {
+        const btn = document.getElementById('confirmBtn');
+        btn.disabled = true;
+        btn.style.background = '#94a3b8';
+        btn.style.cursor = 'not-allowed';
+    }
+</script>

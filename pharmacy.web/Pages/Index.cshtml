@@ -1,10 +1,235 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+    <div class="hero-section text-white p-5 shadow-lg position-relative overflow-hidden" 
+         style="border-radius: 30px; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1586015555751-63bb77f4322a?q=80&w=2070'); background-size: cover; background-position: center;">
+        <div class="row align-items-center py-5">
+            <div class="col-lg-8 ps-md-5">
+                <h1 class="display-3 fw-bold mb-3">Order Your Medicine from the Nearest Pharmacy</h1>
+                <p class="fs-5 mb-4 opacity-75">We help you find available medicines at the nearest pharmacies to you.</p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="#" class="btn btn-primary btn-lg px-4 py-3 rounded-3 shadow">
+                        <i class="bi bi-search me-2"></i>Order Medicine
+                    </a>
+                    <a asp-page="/Home/Location" class="btn btn-success btn-lg px-4 py-3 rounded-3 shadow">
+                        <i class="bi bi-geo-alt me-2"></i>Set My Location
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<div class="container py-5 mt-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold display-6">About Our Platform</h2>
+        <p class="text-muted mx-auto" style="max-width: 600px;">The most comprehensive pharmacy management system connecting patients, pharmacies, and healthcare providers.</p>
+    </div>
+
+    <div class="row align-items-center g-5 py-4">
+        <div class="col-md-6">
+            <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=2070" class="img-fluid rounded-5 shadow" alt="Mission">
+        </div>
+        <div class="col-md-6 ps-md-5">
+            <h3 class="fw-bold mb-4">Our Mission</h3>
+            <p class="text-muted fs-5 lh-lg">We're revolutionizing healthcare accessibility by creating a seamless connection between patients and pharmacies. Our platform ensures that everyone can find and order their medications quickly, safely, and conveniently.</p>
+            <p class="text-muted fs-5 lh-lg">With advanced location-based services, real-time inventory tracking, and a network of certified pharmacies.</p>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row align-items-center g-5">
+        <div class="col-md-6 pe-md-5">
+            <h2 class="fw-bold mb-5 display-6">Why Choose Us?</h2>
+            <div class="d-flex mb-4">
+                <div class="icon-circle me-3 shadow-sm bg-light text-primary"><i class="bi bi-check-circle-fill"></i></div>
+                <div>
+                    <h5 class="fw-bold mb-1">Certified Pharmacies Only</h5>
+                    <p class="text-muted small">All our partner pharmacies are licensed and verified for your safety.</p>
+                </div>
+            </div>
+            <div class="d-flex mb-4">
+                <div class="icon-circle me-3 shadow-sm bg-light text-success"><i class="bi bi-lightning-fill"></i></div>
+                <div>
+                    <h5 class="fw-bold mb-1">Fast & Reliable Service</h5>
+                    <p class="text-muted small">Get your medications delivered within an hour or pick them up at your convenience.</p>
+                </div>
+            </div>
+            <div class="d-flex mb-4">
+                <div class="icon-circle me-3 shadow-sm bg-light text-purple"><i class="bi bi-heart-pulse-fill"></i></div>
+                <div>
+                    <h5 class="fw-bold mb-1">Patient-Centered Care</h5>
+                    <p class="text-muted small">Free consultations with pharmacists and personalized healthcare support.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+           <img src="https://images.unsplash.com/photo-1576602976047-174e57a47881?q=80&w=2069" class="img-fluid rounded-5 shadow" alt="Medicine Shelves">
+        </div>
+    </div>
+</div>
+
+<div class="stats-banner py-5 my-5 shadow-sm" style="background-color: #2563eb;">
+    <div class="container">
+        <div class="row text-center text-white g-4">
+            <div class="col-6 col-md-3">
+                <h1 class="fw-bold display-5 mb-0">500+</h1>
+                <p class="opacity-75">Partner Pharmacies</p>
+            </div>
+            <div class="col-6 col-md-3">
+                <h1 class="fw-bold display-5 mb-0">50K+</h1>
+                <p class="opacity-75">Happy Customers</p>
+            </div>
+            <div class="col-6 col-md-3">
+                <h1 class="fw-bold display-5 mb-0">100K+</h1>
+                <p class="opacity-75">Orders Delivered</p>
+            </div>
+            <div class="col-6 col-md-3">
+                <h1 class="fw-bold display-5 mb-0">24/7</h1>
+                <p class="opacity-75">Customer Support</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <h2 class="fw-bold text-center mb-5 display-6">How It Works</h2>
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-5 overflow-hidden card-hover position-relative">
+                <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2040" class="card-img-top" style="height: 220px; object-fit: cover;">
+                <div class="card-body p-4 pt-5 position-relative">
+                    <div class="step-badge shadow-lg"><i class="bi bi-geo-alt-fill"></i></div>
+                    <h5 class="fw-bold">Set Your Location</h5>
+                    <p class="text-muted small">Use GPS or enter address manually to find nearby pharmacies.</p>
+                    <a asp-page="/Location" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-5 overflow-hidden card-hover position-relative">
+                <img src="https://images.unsplash.com/photo-1471864190281-a93a3070b6de?q=80&w=2070" class="card-img-top" style="height: 220px; object-fit: cover;">
+                <div class="card-body p-4 pt-5 position-relative">
+                    <div class="step-badge shadow-lg bg-success"><i class="bi bi-search"></i></div>
+                    <h5 class="fw-bold">Search for Medicine</h5>
+                    <p class="text-muted small">Search by name and see real-time availability at nearby pharmacies.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-5 overflow-hidden card-hover position-relative">
+                <img src="https://images.unsplash.com/photo-1585435557343-3b092031a831?q=80&w=2070" class="card-img-top" style="height: 220px; object-fit: cover;">
+                <div class="card-body p-4 pt-5 position-relative">
+                    <div class="step-badge shadow-lg bg-purple"><i class="bi bi-truck"></i></div>
+                    <h5 class="fw-bold">Receive Your Order</h5>
+                    <p class="text-muted small">Get your medicine delivered or pick it up from the pharmacy.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5 border-top">
+    <div class="row py-4 g-4 text-center">
+        <div class="col-md-4">
+            <div class="d-flex align-items-center justify-content-center">
+                <i class="bi bi-clock-history fs-2 text-primary me-3"></i>
+                <div class="text-start">
+                    <h6 class="fw-bold mb-0">Fast Delivery</h6>
+                    <p class="text-muted small mb-0">In less than an hour</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 border-start border-end">
+            <div class="d-flex align-items-center justify-content-center">
+                <i class="bi bi-shield-check fs-2 text-success me-3"></i>
+                <div class="text-start">
+                    <h6 class="fw-bold mb-0">Safe & Reliable</h6>
+                    <p class="text-muted small mb-0">Certified pharmacies only</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="d-flex align-items-center justify-content-center">
+                <i class="bi bi-chat-dots fs-2 text-purple me-3"></i>
+                <div class="text-start">
+                    <h6 class="fw-bold mb-0">Free Consultation</h6>
+                    <p class="text-muted small mb-0">Chat with a pharmacist</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (User.IsInRole("SuperAdmin"))
+{
+    <div class="container py-5 mb-5 text-center">
+        <div class="card border-0 shadow p-5 rounded-5 bg-white mx-auto" style="max-width: 900px;">
+            <h2 class="fw-bold mb-4 display-6">Admin Portal</h2>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="/Admin/Index" class="btn btn-dark px-5 py-3 rounded-4 shadow fw-bold" style="background-color: #0f172a;">
+                    🔧 Go to Admin Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+}
+else if (User.IsInRole("PharmacyAdmin"))
+{
+    <div class="container py-5 mb-5 text-center">
+        <div class="card border-0 shadow p-5 rounded-5 bg-white mx-auto" style="max-width: 900px;">
+            <h2 class="fw-bold mb-4 display-6">Pharmacy Portal</h2>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="/Dashboard" class="btn btn-primary px-5 py-3 rounded-4 shadow fw-bold" style="background-color: #4f46e5;">
+                    💊 Go to Pharmacy Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .icon-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+    .text-purple { color: #a855f7; }
+    .bg-purple { background-color: #a855f7 !important; }
+
+    .step-badge {
+        position: absolute;
+        top: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 60px;
+        background-color: #2563eb;
+        color: white;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        border: 4px solid white;
+        z-index: 2;
+    }
+
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card-hover:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,0.1) !important;
+    }
+</style>

@@ -6,60 +6,185 @@
     <title>@ViewData["Title"] - Pharmacy System</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-</head>
-<body style="font-family:'Segoe UI',sans-serif; margin:0; padding:0;">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-    <!-- Navbar -->
-    <nav style="background:white; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 10px rgba(0,0,0,0.08); position:sticky; top:0; z-index:999;">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <span style="font-size:24px;">💊</span>
-            <strong style="font-size:18px;">Pharmacy System</strong>
-        </div>
-        <div style="display:flex; gap:20px;">
-            <a href="/Dashboard" style="text-decoration:none; color:#333; font-weight:500;">📊 Dashboard</a>
-            <a href="/Medicines" style="text-decoration:none; color:#333; font-weight:500;">💊 Medicines</a>
-            <a href="/Orders" style="text-decoration:none; color:#333; font-weight:500;">🛒 Orders</a>
-        </div>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f5f7fb; }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 60px;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 18px;
+            color: #1e293b;
+            text-decoration: none;
+        }
+
+        .navbar-brand i {
+            color: #2563eb;
+            font-size: 20px;
+        }
+
+        .navbar-links {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar-links li a {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .navbar-links li a:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .navbar-links li a.active {
+            color: #2563eb;
+            background: #eff6ff;
+            font-weight: 600;
+        }
+
+        .navbar-links i { font-size: 13px; }
+
+        .btn-login {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: #2563eb;
+            color: white !important;
+            padding: 9px 20px !important;
+            border-radius: 10px !important;
+            font-weight: 600 !important;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .btn-login:hover {
+            background: #1d4ed8 !important;
+            color: white !important;
+        }
+    </style>
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+
+        <!-- Brand -->
+        <a href="/Index" class="navbar-brand">
+            <i class="fa-solid fa-plus"></i>
+            Pharmacy System
+        </a>
+
+        <!-- Links -->
+        <ul class="navbar-links">
+            <li>
+                <a href="/Index" class="@(ViewContext.RouteData.Values["page"]?.ToString()?.Contains("Index") == true ? "active" : "")">
+                    <i class="fa-solid fa-house"></i> Home
+                </a>
+            </li>
+            <li>
+                <a href="/Search" class="@(ViewContext.RouteData.Values["page"]?.ToString()?.Contains("Search") == true ? "active" : "")">
+                    <i class="fa-solid fa-magnifying-glass"></i> Search
+                </a>
+            </li>
+            <li>
+                <a href="/Orders" class="@(ViewContext.RouteData.Values["page"]?.ToString()?.Contains("Orders") == true ? "active" : "")">
+                    <i class="fa-solid fa-bag-shopping"></i> My Orders
+                </a>
+            </li>
+            <li>
+                <a href="/Chat" class="@(ViewContext.RouteData.Values["page"]?.ToString()?.Contains("Chat") == true ? "active" : "")">
+                    <i class="fa-solid fa-comment-medical"></i> Chat
+                </a>
+            </li>
+            <li>
+                <a href="/Contact/Contact" class="@(ViewContext.RouteData.Values["page"]?.ToString()?.Contains("Contact") == true ? "active" : "")">
+                    <i class="fa-solid fa-envelope"></i> Contact Us
+                </a>
+            </li>
+            <li>
+                @if (User.Identity!.IsAuthenticated)
+                {
+                    <a href="/Account/Logout" class="btn-login">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </a>
+                }
+                else
+                {
+                    <a href="/Account/Login" class="btn-login">
+                        <i class="fa-solid fa-right-to-bracket"></i> Login
+                    </a>
+                }
+            </li>
+        </ul>
+
     </nav>
 
-    <!-- Page Content -->
-    <main>
-        @RenderBody()
-    </main>
+    <!-- PAGE CONTENT -->
+    @RenderBody()
 
-    <!-- Footer -->
+    <!-- FOOTER -->
     <footer style="background:#0f172a; color:white; padding:50px 60px 20px;">
         <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:40px; margin-bottom:40px;">
 
-            <!-- Brand -->
             <div>
                 <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
-                    <span style="font-size:22px;">💊</span>
+                    <i class="fa-solid fa-plus" style="color:#2563eb; font-size:20px;"></i>
                     <strong style="font-size:18px;">Pharmacy System</strong>
                 </div>
                 <p style="color:#94a3b8; font-size:14px; line-height:1.7;">
                     Your trusted partner for finding and ordering medicines from nearby pharmacies.
                 </p>
                 <div style="display:flex; gap:15px; margin-top:15px;">
-                    <a href="#" style="color:#94a3b8; text-decoration:none; font-size:18px;">f</a>
-                    <a href="#" style="color:#94a3b8; text-decoration:none; font-size:18px;">t</a>
-                    <a href="#" style="color:#94a3b8; text-decoration:none; font-size:18px;">in</a>
-                    <a href="#" style="color:#94a3b8; text-decoration:none; font-size:18px;">ig</a>
+                    <a href="#" style="color:#94a3b8; text-decoration:none;"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#" style="color:#94a3b8; text-decoration:none;"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" style="color:#94a3b8; text-decoration:none;"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" style="color:#94a3b8; text-decoration:none;"><i class="fa-brands fa-linkedin"></i></a>
                 </div>
             </div>
 
-            <!-- Quick Links -->
             <div>
                 <h4 style="font-size:16px; font-weight:600; margin-bottom:15px;">Quick Links</h4>
                 <ul style="list-style:none; padding:0; margin:0;">
-                    <li style="margin-bottom:10px;"><a href="/" style="color:#94a3b8; text-decoration:none; font-size:14px;">Home</a></li>
-                    <li style="margin-bottom:10px;"><a href="/Medicines" style="color:#94a3b8; text-decoration:none; font-size:14px;">Search Medicine</a></li>
+                    <li style="margin-bottom:10px;"><a href="/Index" style="color:#94a3b8; text-decoration:none; font-size:14px;">Home</a></li>
+                    <li style="margin-bottom:10px;"><a href="/Search" style="color:#94a3b8; text-decoration:none; font-size:14px;">Search Medicine</a></li>
                     <li style="margin-bottom:10px;"><a href="/Orders" style="color:#94a3b8; text-decoration:none; font-size:14px;">My Orders</a></li>
-                    <li style="margin-bottom:10px;"><a href="#" style="color:#94a3b8; text-decoration:none; font-size:14px;">Chat Support</a></li>
+                    <li style="margin-bottom:10px;"><a href="/Chat" style="color:#94a3b8; text-decoration:none; font-size:14px;">Chat Support</a></li>
                 </ul>
             </div>
 
-            <!-- For Pharmacies -->
             <div>
                 <h4 style="font-size:16px; font-weight:600; margin-bottom:15px;">For Pharmacies</h4>
                 <ul style="list-style:none; padding:0; margin:0;">
@@ -70,31 +195,27 @@
                 </ul>
             </div>
 
-            <!-- Contact -->
             <div>
                 <h4 style="font-size:16px; font-weight:600; margin-bottom:15px;">Contact Us</h4>
                 <ul style="list-style:none; padding:0; margin:0;">
-                    <li style="margin-bottom:10px; color:#94a3b8; font-size:14px;">📞 +20 123 456 7890</li>
-                    <li style="margin-bottom:10px; color:#94a3b8; font-size:14px;">✉️ info@pharmacy.com</li>
-                    <li style="margin-bottom:10px; color:#94a3b8; font-size:14px;">📍 Cairo, Egypt Heliopolis, 11341</li>
+                    <li style="margin-bottom:10px; color:#94a3b8; font-size:14px;"><i class="fa-solid fa-phone" style="margin-right:8px;"></i>+20 123 456 7890</li>
+                    <li style="margin-bottom:10px; color:#94a3b8; font-size:14px;"><i class="fa-solid fa-envelope" style="margin-right:8px;"></i>info@pharmacy.com</li>
+                    <li style="margin-bottom:10px; color:#94a3b8; font-size:14px;"><i class="fa-solid fa-location-dot" style="margin-right:8px;"></i>Cairo, Egypt Heliopolis, 11341</li>
                     <li style="margin-bottom:10px;">
                         <a href="#" style="color:#3b82f6; text-decoration:none; font-size:14px;">Send us a message →</a>
                     </li>
                 </ul>
             </div>
-
         </div>
 
-        <!-- Bottom Bar -->
         <div style="border-top:1px solid #1e293b; padding-top:20px; display:flex; justify-content:space-between; align-items:center;">
             <p style="color:#64748b; font-size:13px; margin:0;">© 2026 Pharmacy System. All rights reserved.</p>
             <div style="display:flex; gap:20px;">
                 <a href="#" style="color:#64748b; text-decoration:none; font-size:13px;">Privacy Policy</a>
                 <a href="#" style="color:#64748b; text-decoration:none; font-size:13px;">Terms of Service</a>
-                <a href="#" style="color:#64748b; text-decoration:none; font-size:14px;">Cookie Policy</a>
+                <a href="#" style="color:#64748b; text-decoration:none; font-size:13px;">Cookie Policy</a>
             </div>
         </div>
-
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

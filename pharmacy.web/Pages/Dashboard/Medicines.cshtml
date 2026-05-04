@@ -1,5 +1,9 @@
-﻿@page "/Medicines"
+﻿@page 
 @model Pharmacy.web.Pages.Medicines.IndexModel
+@{
+    Layout = "_LayoutDashboard";
+}
+
 
 @if (TempData["SuccessMessage"] != null)
 {
