@@ -49,23 +49,19 @@ namespace Pharmacy.web.Pages.Account
             if (result.Succeeded)
             {
                 var user = await _userManager.FindByEmailAsync(Input.Email);
-                if (user != null)
+                var roles = await _userManager.GetRolesAsync(user!);
+
+                if (roles.Contains("SuperAdmin"))
+                    return RedirectToPage("/Admin/Index");
+
+                else if (roles.Contains("PharmacyAdmin"))
                 {
-                    if (await _userManager.IsInRoleAsync(user, "SuperAdmin"))
-                    {
-                        return RedirectToPage("/Admin/Index"); // توجيه إلى لوحة تحكم SuperAdmin
-                    }
-                    else if (await _userManager.IsInRoleAsync(user, "PharmacyAdmin"))
-                    {
-                        return RedirectToPage("/Dashboard/Index"); // توجيه إلى لوحة تحكم PharmacyAdmin
-                    }
-                    else // إذا لم يكن SuperAdmin أو PharmacyAdmin، نفترض أنه مستخدم عادي
-                    {
-                        return RedirectToPage("/Location/Index"); // توجيه المستخدم العادي إلى صفحة Index (أو أي صفحة افتراضية أخرى)
-                    }
+                    // ✅ بيروح Dashboard بتاع صيدليته
+                    return RedirectToPage("/Dashboard/Index", new { pharmacyId = user!.PharmacyId });
                 }
-                // في حالة عدم العثور على المستخدم بعد تسجيل الدخول الناجح (حالة نادرة)
-                return RedirectToPage("/Location/Index");
+
+                else
+                    return RedirectToPage("/Location/Index");
             }
 
             ModelState.AddModelError(string.Empty, "Invalid email or password");

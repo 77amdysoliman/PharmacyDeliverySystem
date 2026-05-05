@@ -11,13 +11,19 @@ namespace pharamcy.web.Pages.Cart
         [BindProperty(SupportsGet = true)]
         public int PharmacyId { get; set; }
 
-        [BindProperty]
+        [BindProperty(SupportsGet = true)]
+        public int MedicineId { get; set; }
+
+        // ✅ SupportsGet علشان يتعبى من الـ URL
+        [BindProperty(SupportsGet = true)]
         public string MedicineName { get; set; } = "";
 
         [BindProperty]
         public int Quantity { get; set; } = 1;
 
         public void OnGet() { }
+        [BindProperty(SupportsGet = true)]
+        public decimal UnitPrice { get; set; }
 
         public IActionResult OnPost()
         {
@@ -25,9 +31,10 @@ namespace pharamcy.web.Pages.Cart
             {
                 CartHelper.AddItem(HttpContext.Session, new CartItem
                 {
+                    MedicineId = MedicineId,
                     MedicineName = MedicineName,
                     Quantity = Quantity,
-                    UnitPrice = 0 
+                    UnitPrice = UnitPrice
                 });
             }
 

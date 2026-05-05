@@ -48,6 +48,30 @@
             margin: 0;
             padding: 0;
         }
+        .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1e293b;
+    transition: 0.3s ease;
+}
+
+.logo:hover {
+    color: #2563eb;
+    transform: scale(1.03);
+}
+
+.logo-icon {
+    color: #2563eb;
+    font-size: 22px;
+}
+
+.logo-text {
+    letter-spacing: 0.5px;
+}
 
         .navbar-links li a {
             display: flex;
@@ -115,19 +139,15 @@
                 </a>
             </li>
             <li>
-                <a href="/Search" class="@(ViewContext.RouteData.Values["page"]?.ToString()?.Contains("Search") == true ? "active" : "")">
+                <a href="/Orders/Orders" class="@(ViewContext.RouteData.Values["page"]?.ToString()?.Contains("Search") == true ? "active" : "")">
                     <i class="fa-solid fa-magnifying-glass"></i> Search
                 </a>
             </li>
+          
             <li>
-                <a href="/Orders" class="@(ViewContext.RouteData.Values["page"]?.ToString()?.Contains("Orders") == true ? "active" : "")">
-                    <i class="fa-solid fa-bag-shopping"></i> My Orders
-                </a>
-            </li>
-            <li>
-                <a href="/Chat" class="@(ViewContext.RouteData.Values["page"]?.ToString()?.Contains("Chat") == true ? "active" : "")">
-                    <i class="fa-solid fa-comment-medical"></i> Chat
-                </a>
+                <a href="/MyOrders" ...>
+                 <i class="fa-solid fa-bag-shopping"></i> My Orders
+                  </a>
             </li>
             <li>
                 <a href="/Contact/Contact" class="@(ViewContext.RouteData.Values["page"]?.ToString()?.Contains("Contact") == true ? "active" : "")">
@@ -161,8 +181,10 @@
 
             <div>
                 <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
-                    <i class="fa-solid fa-plus" style="color:#2563eb; font-size:20px;"></i>
-                    <strong style="font-size:18px;">Pharmacy System</strong>
+                    <a asp-page="/Index" class="logo">
+                       <i class="fa-solid fa-plus logo-icon"></i>
+                   <span class="logo-text">Pharmacy System</span>
+                    </a> 
                 </div>
                 <p style="color:#94a3b8; font-size:14px; line-height:1.7;">
                     Your trusted partner for finding and ordering medicines from nearby pharmacies.
@@ -202,7 +224,7 @@
                     <li style="margin-bottom:10px; color:#94a3b8; font-size:14px;"><i class="fa-solid fa-envelope" style="margin-right:8px;"></i>info@pharmacy.com</li>
                     <li style="margin-bottom:10px; color:#94a3b8; font-size:14px;"><i class="fa-solid fa-location-dot" style="margin-right:8px;"></i>Cairo, Egypt Heliopolis, 11341</li>
                     <li style="margin-bottom:10px;">
-                        <a href="#" style="color:#3b82f6; text-decoration:none; font-size:14px;">Send us a message →</a>
+                        <a href="/Contact/Contact" style="color:#3b82f6; text-decoration:none; font-size:14px;">Send us a message →</a>
                     </li>
                 </ul>
             </div>

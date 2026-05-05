@@ -9,7 +9,7 @@ namespace pharmacy.Application.DTOs
     public class OrderDto
     {
         public int Id { get; set; }
-        public int UserId { get; set; }     
+        public string UserId { get; set; } = string.Empty;
         public int PharmacyId { get; set; }
         public DateTime OrderDate { get; set; }
         public string Status { get; set; }
@@ -18,7 +18,7 @@ namespace pharmacy.Application.DTOs
         public string? Notes { get; set; }
         public string UserName { get; set; }
         public string PharmacyName { get; set; }
-
+       
         public List<OrderItemDto> Items { get; set; } = new();
     }
 

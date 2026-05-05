@@ -14,22 +14,26 @@
         </div>
 
         <form method="post">
+            @Html.AntiForgeryToken()
             <input type="hidden" asp-for="PharmacyId" />
+            <input type="hidden" asp-for="MedicineId" />
+            <input type="hidden" asp-for="UnitPrice" />
 
             <div style="margin-bottom:20px;">
                 <label style="font-weight:600; color:#374151; display:block; margin-bottom:8px;">Medicine Name</label>
-                <input asp-for="MedicineName" placeholder="e.g. Panadol"
-                       style="width:100%; padding:12px 16px; border:1.5px solid #e5e7eb; border-radius:10px; font-size:15px; outline:none; box-sizing:border-box;" />
+                <input asp-for="MedicineName"
+                       readonly
+                       style="width:100%; padding:12px 16px; border:1.5px solid #e5e7eb; border-radius:10px; font-size:15px; outline:none; box-sizing:border-box; background:#f8fafc; color:#374151;" />
             </div>
 
             <div style="margin-bottom:28px;">
                 <label style="font-weight:600; color:#374151; display:block; margin-bottom:8px;">Quantity</label>
-                <input asp-for="Quantity" type="number" min="1"
+                <input asp-for="Quantity" type="number" min="1" value="1"
                        style="width:100%; padding:12px 16px; border:1.5px solid #e5e7eb; border-radius:10px; font-size:15px; outline:none; box-sizing:border-box;" />
             </div>
 
             <div style="display:flex; gap:12px;">
-                <a asp-page="/NearestPharmacies"
+                <a href="javascript:history.back()"
                        style="flex:1; background:white; color:#2563eb; border:2px solid #2563eb; border-radius:12px; padding:13px; font-size:15px; font-weight:600; text-align:center; text-decoration:none;">
                     ← Back
                 </a>

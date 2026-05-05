@@ -59,9 +59,29 @@ namespace Pharmacy.web.Pages.Account
 
             if (result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(user, "User");
-                TempData["SuccessMessage"] = "Account created successfully! Please login. ✅";
-                return RedirectToPage("/Account/Login");
+                var email = Input.Email.ToLower();
+
+                // ✅ SuperAdmin
+                if (email.Contains("superadmin"))
+                {
+                    await _userManager.AddToRoleAsync(user, "SuperAdmin");
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToPage("/Admin/Index");
+                }
+                // ✅ PharmacyAdmin
+                else if (email.Contains("pharmacyadmin"))
+                {
+                    await _userManager.AddToRoleAsync(user, "PharmacyAdmin");
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToPage("/Dashboard/Index");
+                }
+                // ✅ User عادي
+                else
+                {
+                    await _userManager.AddToRoleAsync(user, "User");
+                    TempData["SuccessMessage"] = "Account created successfully! Please login. ✅";
+                    return RedirectToPage("/Account/Login");
+                }
             }
 
             foreach (var error in result.Errors)

@@ -69,6 +69,30 @@
                     border-radius: 8px;
                     transition: all 0.2s ease;
                 }
+                .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1e293b;
+    transition: 0.3s ease;
+}
+
+.logo:hover {
+    color: #2563eb;
+    transform: scale(1.03);
+}
+
+.logo-icon {
+    color: #2563eb;
+    font-size: 22px;
+}
+
+.logo-text {
+    letter-spacing: 0.5px;
+}
 
                     /* hover */
                     .navbar-links li a:hover {
@@ -149,9 +173,11 @@
             <!-- Brand -->
             <div>
                 <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
-                    <span style="font-size:22px;">💊</span>
-                    <strong style="font-size:18px;">Pharmacy System</strong>
-                </div>
+                <a asp-page="/Index" class="logo">
+                    <i class="fa-solid fa-plus logo-icon"></i>
+                    <span class="logo-text">Pharmacy System</span>
+                </a>
+            </div>
                 <p style="color:#94a3b8; font-size:14px; line-height:1.7;">
                     Your trusted partner for finding and ordering medicines from nearby pharmacies.
                 </p>
@@ -193,7 +219,7 @@
                     <li style="margin-bottom:10px; color:#94a3b8; font-size:14px;">✉️ info@pharmacy.com</li>
                     <li style="margin-bottom:10px; color:#94a3b8; font-size:14px;">📍 Cairo, Egypt Heliopolis, 11341</li>
                     <li style="margin-bottom:10px;">
-                        <a href="#" style="color:#3b82f6; text-decoration:none; font-size:14px;">Send us a message →</a>
+                        <a href="/Contact/Contact" style="color:#3b82f6; text-decoration:none; font-size:14px;">Send us a message →</a>
                     </li>
                 </ul>
             </div>

@@ -1,0 +1,80 @@
+﻿@page "/MyOrders"
+@model Pharmacy.web.Pages.MyOrders.IndexModel
+
+<div style="min-height:100vh; background:#eef1f8; padding:40px 16px; font-family:'Segoe UI',sans-serif;">
+
+    <div style="text-align:center; margin-bottom:32px;">
+        <h1 style="font-size:28px; font-weight:700; color:#1a1a2e;">My Orders</h1>
+        <p style="color:#6b7280;">Track all your orders</p>
+    </div>
+
+    @if (!Model.Orders.Any())
+    {
+        <div style="text-align:center; padding:60px;">
+            <div style="font-size:60px; margin-bottom:15px;">📦</div>
+            <h3 style="color:#888; margin-bottom:20px;">No orders yet</h3>
+            <a href="/Orders/Orders" style="background:#2563eb; color:white; padding:12px 30px; border-radius:10px; text-decoration:none; font-weight:600;">
+                Search for Medicine
+            </a>
+        </div>
+    }
+    else
+    {
+        <div style="max-width:900px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fill, minmax(380px, 1fr)); gap:20px;">
+            @foreach (var order in Model.Orders)
+            {
+                <div style="background:white; border-radius:16px; padding:24px; box-shadow:0 2px 12px rgba(0,0,0,0.07);">
+
+                    <!-- Header -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                        <div>
+                            <h3 style="font-size:18px; font-weight:700; margin:0;">Order #@order.Id</h3>
+                            <p style="color:#888; font-size:13px; margin:4px 0 0;">@order.OrderDate.ToString("yyyy-MM-dd")</p>
+                        </div>
+
+                        @if (order.Status == "Pending")
+                        {
+                            <span style="background:#fef9c3; color:#854d0e; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600;">⏰ Pending</span>
+                        }
+                        else if (order.Status == "Confirmed" || order.Status == "Preparing")
+                        {
+                            <span style="background:#dbeafe; color:#1e40af; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600;">⏰ Preparing</span>
+                        }
+                        else if (order.Status == "OutForDelivery")
+                        {
+                            <span style="background:#fef3c7; color:#d97706; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600;">🚗 On The Way</span>
+                        }
+                        else if (order.Status == "Delivered")
+                        {
+                            <span style="background:#dcfce7; color:#16a34a; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600;">✅ Delivered</span>
+                        }
+                        else if (order.Status == "Cancelled")
+                        {
+                            <span style="background:#fee2e2; color:#dc2626; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600;">❌ Cancelled</span>
+                        }
+                    </div>
+
+                    <!-- Details -->
+                    <div style="display:flex; flex-direction:column; gap:10px; font-size:14px;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:#888;">Medicine:</span>
+                            <span style="font-weight:600;">@string.Join(", ", order.Items.Select(i => i.MedicineName))</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:#888;">Pharmacy:</span>
+                            <span style="font-weight:600;">@order.PharmacyName</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:#888;">Total:</span>
+                            <span style="font-weight:700; color:#2563eb;">@order.TotalPrice.ToString("N0") EGP</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:#888;">Address:</span>
+                            <span style="font-weight:600;">@order.DeliveryAddress</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

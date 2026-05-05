@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using pharmacy.Application.Interfaces;
 using pharmacy.Application.DTOs;
+using pharmacy.Application.Interfaces;
+using pharmacy.domin.Identity;
 
 namespace Pharmacy.web.Pages.Dashboard
 {
@@ -8,6 +10,8 @@ namespace Pharmacy.web.Pages.Dashboard
     {
         private readonly IOrderService _orderService;
         private readonly IMedicineService _medicineService;
+        private readonly UserManager<ApplicationUser> _userManager;
+
 
         public int NewOrders { get; set; }
         public int PendingOrders { get; set; }
@@ -15,24 +19,45 @@ namespace Pharmacy.web.Pages.Dashboard
         public decimal TodaySales { get; set; }
         public IEnumerable<OrderDto> RecentOrders { get; set; } = new List<OrderDto>();
 
-        public IndexModel(IOrderService orderService, IMedicineService medicineService)
+        public IndexModel(
+           IOrderService orderService,
+           IMedicineService medicineService,
+           UserManager<ApplicationUser> userManager)
         {
             _orderService = orderService;
             _medicineService = medicineService;
+            _userManager = userManager; 
         }
 
         public async Task OnGetAsync()
         {
-            var orders = await _orderService.GetAllOrdersAsync();
-            var medicines = await _medicineService.GetAllMedicinesAsync();
+            var user = await _userManager.GetUserAsync(User);
 
-            NewOrders = orders.Count(o => o.Status == "Pending");
-            PendingOrders = orders.Count(o => o.Status == "Preparing");
+            if (User.IsInRole("PharmacyAdmin") && user?.PharmacyId != null)
+            {
+                // ✅ بيجيب أوردرات صيدليته بس
+                var allOrders = await _orderService.GetOrdersByPharmacyAsync(user.PharmacyId.Value);
+                RecentOrders = allOrders.TakeLast(10).Reverse();
+                NewOrders = allOrders.Count(o => o.Status == "Pending");
+                PendingOrders = allOrders.Count(o => o.Status == "Preparing");
+                TodaySales = allOrders
+                    .Where(o => o.OrderDate.Date == DateTime.Today)
+                    .Sum(o => o.TotalPrice);
+            }
+            else
+            {
+                // SuperAdmin بيشوف كل حاجة
+                var allOrders = await _orderService.GetAllOrdersAsync();
+                RecentOrders = allOrders.TakeLast(10).Reverse();
+                NewOrders = allOrders.Count(o => o.Status == "Pending");
+                PendingOrders = allOrders.Count(o => o.Status == "Preparing");
+                TodaySales = allOrders
+                    .Where(o => o.OrderDate.Date == DateTime.Today)
+                    .Sum(o => o.TotalPrice);
+            }
+
+            var medicines = await _medicineService.GetAllMedicinesAsync();
             AvailableMedicines = medicines.Count(m => m.IsAvailable);
-            TodaySales = orders
-                .Where(o => o.OrderDate.Date == DateTime.Today)
-                .Sum(o => o.TotalPrice);
-            RecentOrders = orders.TakeLast(10).Reverse();
         }
 
     }

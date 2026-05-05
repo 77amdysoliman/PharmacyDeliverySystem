@@ -149,6 +149,76 @@
 
     <!-- ===== PAGE CONTENT ===== -->
     @RenderBody()
+    <footer style="background:#0f172a; color:white; padding:50px 60px 20px;">
+        <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:40px; margin-bottom:40px;">
+
+            <!-- Brand -->
+            <div>
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+                    <a asp-page="/Index" class="logo">
+                        <i class="fa-solid fa-plus logo-icon"></i>
+                        <span class="logo-text">Pharmacy System</span>
+                    </a>
+                </div>
+                <p style="color:#94a3b8; font-size:14px; line-height:1.7;">
+                    Your trusted partner for finding and ordering medicines from nearby pharmacies.
+                </p>
+                <div style="display:flex; gap:15px; margin-top:15px;">
+                    <a href="#" style="color:#94a3b8; text-decoration:none; font-size:18px;">f</a>
+                    <a href="#" style="color:#94a3b8; text-decoration:none; font-size:18px;">t</a>
+                    <a href="#" style="color:#94a3b8; text-decoration:none; font-size:18px;">in</a>
+                    <a href="#" style="color:#94a3b8; text-decoration:none; font-size:18px;">ig</a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div>
+                <h4 style="font-size:16px; font-weight:600; margin-bottom:15px;">Quick Links</h4>
+                <ul style="list-style:none; padding:0; margin:0;">
+                    <li style="margin-bottom:10px;"><a href="/" style="color:#94a3b8; text-decoration:none; font-size:14px;">Home</a></li>
+                    <li style="margin-bottom:10px;"><a href="/Medicines" style="color:#94a3b8; text-decoration:none; font-size:14px;">Search Medicine</a></li>
+                    <li style="margin-bottom:10px;"><a href="/Orders" style="color:#94a3b8; text-decoration:none; font-size:14px;">My Orders</a></li>
+                    <li style="margin-bottom:10px;"><a href="#" style="color:#94a3b8; text-decoration:none; font-size:14px;">Chat Support</a></li>
+                </ul>
+            </div>
+
+            <!-- For Pharmacies -->
+            <div>
+                <h4 style="font-size:16px; font-weight:600; margin-bottom:15px;">For Pharmacies</h4>
+                <ul style="list-style:none; padding:0; margin:0;">
+                    <li style="margin-bottom:10px;"><a href="/Dashboard" style="color:#94a3b8; text-decoration:none; font-size:14px;">Pharmacy Portal</a></li>
+                    <li style="margin-bottom:10px;"><a href="/Medicines" style="color:#94a3b8; text-decoration:none; font-size:14px;">Manage Medicines</a></li>
+                    <li style="margin-bottom:10px;"><a href="/Orders" style="color:#94a3b8; text-decoration:none; font-size:14px;">Manage Orders</a></li>
+                    <li style="margin-bottom:10px;"><a href="#" style="color:#94a3b8; text-decoration:none; font-size:14px;">Register Pharmacy</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div>
+                <h4 style="font-size:16px; font-weight:600; margin-bottom:15px;">Contact Us</h4>
+                <ul style="list-style:none; padding:0; margin:0;">
+                    <li style="margin-bottom:10px; color:#94a3b8; font-size:14px;">📞 +20 123 456 7890</li>
+                    <li style="margin-bottom:10px; color:#94a3b8; font-size:14px;">✉️ info@pharmacy.com</li>
+                    <li style="margin-bottom:10px; color:#94a3b8; font-size:14px;">📍 Cairo, Egypt Heliopolis, 11341</li>
+                    <li style="margin-bottom:10px;">
+                        <a href="/Contact/Contact" style="color:#3b82f6; text-decoration:none; font-size:14px;">Send us a message →</a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Bottom Bar -->
+        <div style="border-top:1px solid #1e293b; padding-top:20px; display:flex; justify-content:space-between; align-items:center;">
+            <p style="color:#64748b; font-size:13px; margin:0;">© 2026 Pharmacy System. All rights reserved.</p>
+            <div style="display:flex; gap:20px;">
+                <a href="#" style="color:#64748b; text-decoration:none; font-size:13px;">Privacy Policy</a>
+                <a href="#" style="color:#64748b; text-decoration:none; font-size:13px;">Terms of Service</a>
+                <a href="#" style="color:#64748b; text-decoration:none; font-size:14px;">Cookie Policy</a>
+            </div>
+        </div>
+
+    </footer>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

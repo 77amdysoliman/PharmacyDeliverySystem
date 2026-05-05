@@ -11,8 +11,8 @@ namespace pharmacy.Application.Interfaces
     {
         Task<IEnumerable<OrderDto>> GetAllOrdersAsync();
 
-        
-        Task<IEnumerable<OrderDto>> GetOrdersByUserAsync(int userId);
+
+        Task<IEnumerable<OrderDto>> GetOrdersByUserAsync(string userId);
 
         Task<IEnumerable<OrderDto>> GetOrdersByPharmacyAsync(int pharmacyId);
 

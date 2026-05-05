@@ -17,15 +17,16 @@
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
         public decimal TotalPrice { get; set; }
         public string? Notes { get; set; }
-        public string DeliveryAddress { get; set; }
+        public string DeliveryAddress { get; set; } = string.Empty;
+        public double UserLatitude { get; set; }
+        public double UserLongitude { get; set; }
 
-        // FKs
-        public int UserId { get; set; }
+        // ✅ غيرنا UserId من int لـ string
+        public string UserId { get; set; } = string.Empty;
         public int PharmacyId { get; set; }
 
         // Navigation
-        public User user { get; set; }
         public Pharmacy Pharmacy { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
-}
+    }
 }
