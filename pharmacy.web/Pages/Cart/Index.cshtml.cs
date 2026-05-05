@@ -47,7 +47,7 @@ namespace pharamcy.web.Pages.Cart
             return RedirectToPage(new { PharmacyId });
         }
 
-     
+
         public async Task<IActionResult> OnPostConfirmAsync()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -71,7 +71,9 @@ namespace pharamcy.web.Pages.Cart
                 }).ToList()
             };
 
-            
+            // ? «·”ÿ— œÂ ﬂ«‰ ‰«ﬁ’!
+            await _orderService.CreateOrderAsync(orderDto);
+
             CartHelper.ClearCart(HttpContext.Session);
 
             return RedirectToPage("/MyOrders/Index");

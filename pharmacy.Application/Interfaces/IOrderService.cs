@@ -21,5 +21,9 @@ namespace pharmacy.Application.Interfaces
 
 
         Task UpdateOrderStatusAsync(int orderId, string status);
+
+        // Create a new order and return the created OrderDto (including generated Id, Status, TotalPrice)
+        Task<OrderDto> CreateOrderAsync(OrderDto orderDto);
     }
 }
+                    
