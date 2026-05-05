@@ -1,131 +1,94 @@
+using iText.IO.Font.Constants;
+using iText.Kernel.Font;
 using iText.Kernel.Pdf;
-using iText.Layout.Element;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using pharmacy.infrastructuree.Data;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
-using iText.Kernel.Font;
-using iText.IO.Font.Constants;
+using iText.Layout.Element;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using pharmacy.domin.Identity;
+using pharmacy.infrastructuree.Data;
 
 namespace pharmacy.web.Pages.Admin
 {
     public class ReportsModel : PageModel
     {
+       
+            private readonly AppDbContext _db;
+            private readonly UserManager<ApplicationUser> _userManager;
 
-        private readonly AppDbContext _db;
-
-        public decimal TotalRevenue { get; set; }
-        public int TotalOrders { get; set; }
-        public double AvgRating { get; set; }
-
-        public int TotalPharmacies { get; set; }
-        public int ActivePharmacies { get; set; }
-
-        public int ActiveUsers { get; set; }
-        public int NewUsers { get; set; }
-
-        public ReportsModel(AppDbContext db)
-        {
-            _db = db;
-        }
-
-        public void OnGet()
-        {
-            TotalOrders = _db.Orders.Count();
-
-            TotalRevenue = _db.Orders.Any()
-                ? _db.Orders.Sum(o => o.TotalPrice)
-                : 0;
-
-            AvgRating = _db.Pharmacies.Any()
-                ? _db.Pharmacies.Average(p => p.Rating)
-                : 0;
-
-            TotalPharmacies = _db.Pharmacies.Count();
-
-            ActivePharmacies = _db.Pharmacies
-                .Count(p => p.Orders.Any());
-
-            ActiveUsers = _db.User
-                .Count(u => u.Orders.Any());
-
-            NewUsers = _db.User
-                .Count(u => u.CreatedAt >= DateTime.Today.AddDays(-7));
-        }
-
-
-        public IActionResult OnGetDownload()
-        {
-            // ✅ جيب الداتا هنا مباشرة
-            var totalOrders = _db.Orders.Count();
-            var totalRevenue = _db.Orders.Any() ? _db.Orders.Sum(o => o.TotalPrice) : 0;
-            var avgRating = _db.Pharmacies.Any() ? _db.Pharmacies.Average(p => p.Rating) : 0;
-            var totalPharmacies = _db.Pharmacies.Count();
-            var activePharmacies = _db.Pharmacies.Count(p => p.Orders.Any());
-            var activeUsers = _db.User.Count(u => u.Orders.Any());
-            var newUsers = _db.User.Count(u => u.CreatedAt >= DateTime.Today.AddDays(-7));
-
-            using (var stream = new MemoryStream())
+            public ReportsModel(AppDbContext db, UserManager<ApplicationUser> userManager)
             {
-                var writer = new PdfWriter(stream);
-                var pdf = new PdfDocument(writer);
-                var document = new Document(pdf);
+                _db = db;
+                _userManager = userManager;
+            }
 
-                var boldFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
-                var normalFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
+            public decimal TotalRevenue { get; set; }
+            public int TotalOrders { get; set; }
+            public double AvgRating { get; set; }
 
-                document.Add(new Paragraph("Pharmacy System Report")
-                    .SetFont(boldFont).SetFontSize(20));
+            public int TotalPharmacies { get; set; }
+            public int ActivePharmacies { get; set; }
 
-                document.Add(new Paragraph($"Date: {DateTime.Now}")
-                    .SetFont(normalFont));
+            public int ActiveUsers { get; set; }
+            public int NewUsers { get; set; }
 
-                document.Add(new Paragraph("\n"));
+            // 🔥 نجيب المستخدمين الطبيعيين زي الداشبورد
+            private async Task<HashSet<string>> GetNormalUserIds()
+            {
+                var allUsers = await _userManager.Users.ToListAsync();
 
-                // Section 1
-                document.Add(new Paragraph("Revenue & Orders")
-                    .SetFont(boldFont).SetFontSize(14));
+                var normalUsers = new List<ApplicationUser>();
 
-                document.Add(new Paragraph($"Total Revenue: {totalRevenue:N0} EGP")
-                    .SetFont(normalFont));
+                foreach (var u in allUsers)
+                {
+                    var roles = await _userManager.GetRolesAsync(u);
+                    if (roles.Contains("User") || roles.Count == 0)
+                        normalUsers.Add(u);
+                }
 
-                document.Add(new Paragraph($"Total Orders: {totalOrders:N0}")
-                    .SetFont(normalFont));
+                return normalUsers.Select(u => u.Id).ToHashSet();
+            }
 
-                document.Add(new Paragraph("\n"));
+            public async Task OnGetAsync()
+            {
+                var normalUserIds = await GetNormalUserIds();
 
-                // Section 2
-                document.Add(new Paragraph("Users")
-                    .SetFont(boldFont).SetFontSize(14));
+                TotalOrders = await _db.Orders
+                    .AsNoTracking()
+                    .CountAsync(o => normalUserIds.Contains(o.UserId));
 
-                document.Add(new Paragraph($"New Users (last 7 days): {newUsers}")
-                    .SetFont(normalFont));
+                TotalRevenue = await _db.Orders
+                    .AsNoTracking()
+                    .Where(o => normalUserIds.Contains(o.UserId))
+                    .SumAsync(o => (decimal?)o.TotalPrice) ?? 0;
 
-                document.Add(new Paragraph($"Active Users: {activeUsers}")
-                    .SetFont(normalFont));
+                AvgRating = await _db.Pharmacies
+                    .AsNoTracking()
+                    .AnyAsync()
+                    ? await _db.Pharmacies.AsNoTracking().AverageAsync(p => p.Rating)
+                    : 0;
 
-                document.Add(new Paragraph("\n"));
+                TotalPharmacies = await _db.Pharmacies.AsNoTracking().CountAsync();
 
-                // Section 3
-                document.Add(new Paragraph("Pharmacies")
-                    .SetFont(boldFont).SetFontSize(14));
+                ActivePharmacies = await _db.Pharmacies
+                    .AsNoTracking()
+                    .CountAsync(p => p.IsOpen);
 
-                document.Add(new Paragraph($"Total Pharmacies: {totalPharmacies}")
-                    .SetFont(normalFont));
+                ActiveUsers = await _db.Orders
+                    .AsNoTracking()
+                    .Where(o => normalUserIds.Contains(o.UserId))
+                    .Select(o => o.UserId)
+                    .Distinct()
+                    .CountAsync();
 
-                document.Add(new Paragraph($"Active Pharmacies: {activePharmacies}")
-                    .SetFont(normalFont));
-
-                document.Add(new Paragraph($"Average Rating: {avgRating:F1}")
-                    .SetFont(normalFont));
-
-                document.Close();
-
-                return File(stream.ToArray(), "application/pdf", "Report.pdf");
+                NewUsers = await _db.User
+                    .AsNoTracking()
+                    .Where(u => u.CreatedAt >= DateTime.Today.AddDays(-7))
+                    .CountAsync();
             }
         }
-
-    }
-    }
+}

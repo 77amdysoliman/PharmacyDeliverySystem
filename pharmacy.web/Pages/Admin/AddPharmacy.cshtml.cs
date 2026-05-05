@@ -23,7 +23,7 @@ namespace pharmacy.web.Pages.Admin
             if (!ModelState.IsValid)
                 return Page();
 
-            // ✅ بنبعت name, address, phone بس - زي الـ interface
+            
             await _pharmacyService.AddPharmacyAsync(
                 Input.Name,
                 Input.Address,

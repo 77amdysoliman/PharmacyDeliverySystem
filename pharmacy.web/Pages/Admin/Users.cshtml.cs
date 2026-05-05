@@ -14,17 +14,26 @@ namespace pharmacy.web.Pages.Admin
 
         public List<UserVM> Users { get; set; } = new();
 
+        
+        public int CurrentPage { get; set; } = 1;
+        public int TotalPages { get; set; }
+        public int TotalUsers { get; set; }
+        public int PageSize { get; set; } = 10;
+
         public UsersModel(UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _unitOfWork = unitOfWork;
         }
 
-        public async Task OnGetAsync()
+        public async Task OnGetAsync(int pageNumber = 1)
         {
+            CurrentPage = pageNumber < 1 ? 1 : pageNumber;
+
             var orders = await _unitOfWork.Orders.GetAllAsync();
             var allUsers = await _userManager.Users.ToListAsync();
 
+            
             var normalUsers = new List<ApplicationUser>();
             foreach (var u in allUsers)
             {
@@ -33,19 +42,23 @@ namespace pharmacy.web.Pages.Admin
                     normalUsers.Add(u);
             }
 
-            Users = normalUsers.Select(u => new UserVM
-            {
-                Id = u.Id,
-                Name = u.FullName,
-                Email = u.Email ?? "",
-                Phone = u.PhoneNumber ?? "",
-                OrdersCount = orders.Count(o => o.UserId == u.Id),
+            TotalUsers = normalUsers.Count;
+            TotalPages = (int)Math.Ceiling(TotalUsers / (double)PageSize);
 
-                // ✅ Active لو عمل أوردر واحد على الأقل
-                IsActive = orders.Any(o => o.UserId == u.Id),
-
-                CreatedAt = u.CreatedAt
-            }).ToList();
+          
+            Users = normalUsers
+                .Skip((CurrentPage - 1) * PageSize)
+                .Take(PageSize)
+                .Select(u => new UserVM
+                {
+                    Id = u.Id,
+                    Name = u.FullName,
+                    Email = u.Email ?? "",
+                    Phone = u.PhoneNumber ?? "",
+                    OrdersCount = orders.Count(o => o.UserId == u.Id),
+                    IsActive = orders.Any(o => o.UserId == u.Id),
+                    CreatedAt = u.CreatedAt
+                }).ToList();
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(string id)

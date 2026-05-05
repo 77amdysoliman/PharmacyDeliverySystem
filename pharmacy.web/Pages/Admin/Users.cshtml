@@ -155,6 +155,73 @@
     .icon-btn.edit:hover   { background: #dbeafe; }
     .icon-btn.delete { background: #fff1f2; color: #dc2626; }
     .icon-btn.delete:hover { background: #fee2e2; }
+
+    /* ===== Pagination ===== */
+    .pagination-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-top: 1px solid #f1f5f9;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .pagination-info {
+        font-size: 0.8rem;
+        color: #94a3b8;
+    }
+
+    .pagination-controls {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .page-btn {
+        min-width: 34px;
+        height: 34px;
+        padding: 0 10px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 8px;
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all .15s;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .page-btn:hover:not(.disabled) {
+        border-color: #3b82f6;
+        color: #2563eb;
+        background: #eff6ff;
+    }
+
+    .page-btn.active {
+        background: #3b82f6;
+        border-color: #3b82f6;
+        color: #fff;
+    }
+
+    .page-btn.disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    .page-dots {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        padding: 0 2px;
+        user-select: none;
+    }
 </style>
 
 <div class="page-wrapper">
@@ -197,7 +264,10 @@
                 </tr>
             </thead>
             <tbody id="usersTable">
-                @{ int i = 1; }
+                @{
+                    int startIndex = (Model.CurrentPage - 1) * Model.PageSize + 1;
+                    int i = startIndex;
+                }
                 @foreach (var u in Model.Users)
                 {
                     <tr data-name="@u.Name.ToLower()"
@@ -235,44 +305,119 @@
                                 </span>
                             }
                         </td>
-                      <td>
-    <div class="actions">
-        <a asp-page="./EditUser" asp-route-id="@u.Id"
-           class="icon-btn edit" title="Edit">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
-                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-            </svg>
-        </a>
+                        <td>
+                            <div class="actions">
+                                <a asp-page="EditUser" asp-route-id="@u.Id"
+                                   class="icon-btn edit" title="Edit">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                    </svg>
+                                </a>
 
-        <form method="post" asp-page-handler="Delete" style="display:inline">
-            <input type="hidden" name="id" value="@u.Id" />
-            <button type="submit" class="icon-btn delete" title="Delete"
-                    onclick="return confirm('Delete this user?')">
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
-                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="3 6 5 6 21 6"/>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                </svg>
-            </button>
-        </form>
-    </div>
-</td>
+                                <form method="post" asp-page-handler="Delete" style="display:inline">
+                                    <input type="hidden" name="id" value="@u.Id" />
+                                    <button type="submit" class="icon-btn delete" title="Delete"
+                                            onclick="return confirm('Delete this user?')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="3 6 5 6 21 6"/>
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
                     </tr>
                     i++;
                 }
             </tbody>
         </table>
-    </div>
 
-</div>
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
+        {
+            int rangeStart = Math.Max(1, Model.CurrentPage - 1);
+            int rangeEnd   = Math.Min(Model.TotalPages, Model.CurrentPage + 1);
+            int showing    = Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalUsers);
+            int from       = (Model.CurrentPage - 1) * Model.PageSize + 1;
+
+            <div class="pagination-wrapper">
+
+                <span class="pagination-info">
+                    Showing @from–@showing of @Model.TotalUsers users
+                </span>
+
+                <div class="pagination-controls">
+
+                    @* Previous *@
+                    @if (Model.CurrentPage > 1)
+                    {
+                        <a asp-page="Users"
+                           asp-route-pageNumber="@(Model.CurrentPage - 1)"
+                           class="page-btn">&#8592;</a>
+                    }
+                    else
+                    {
+                        <span class="page-btn disabled">&#8592;</span>
+                    }
+
+                    @* First page *@
+                    @if (rangeStart > 1)
+                    {
+                        <a asp-page="Users" asp-route-pageNumber="1" class="page-btn">1</a>
+                        @if (rangeStart > 2)
+                        {
+                            <span class="page-dots">…</span>
+                        }
+                    }
+
+                    @* Middle pages *@
+                    @for (int p = rangeStart; p <= rangeEnd; p++)
+                    {
+                        <a asp-page="Users"
+                           asp-route-pageNumber="@p"
+                           class="page-btn @(p == Model.CurrentPage ? "active" : "")">@p</a>
+                    }
+
+                    @* Last page *@
+                    @if (rangeEnd < Model.TotalPages)
+                    {
+                        @if (rangeEnd < Model.TotalPages - 1)
+                        {
+                            <span class="page-dots">…</span>
+                        }
+                        <a asp-page="Users"
+                           asp-route-pageNumber="@Model.TotalPages"
+                           class="page-btn">@Model.TotalPages</a>
+                    }
+
+                    @* Next *@
+                    @if (Model.CurrentPage < Model.TotalPages)
+                    {
+                        <a asp-page="Users"
+                           asp-route-pageNumber="@(Model.CurrentPage + 1)"
+                           class="page-btn">&#8594;</a>
+                    }
+                    else
+                    {
+                        <span class="page-btn disabled">&#8594;</span>
+                    }
+
+                </div>
+            </div>
+        }
+
+    </div><!-- end table-card -->
+
+</div><!-- end page-wrapper -->
 
 <script>
     let showActiveOnly = false;
 
     const searchInput = document.getElementById('searchInput');
-    const filterBtn = document.getElementById('activeFilterBtn');
+    const filterBtn   = document.getElementById('activeFilterBtn');
 
     function applyFilters() {
         const q = searchInput.value.toLowerCase();

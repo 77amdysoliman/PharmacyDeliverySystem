@@ -33,14 +33,14 @@ namespace pharmacy.web.Pages.Admin
             }).ToList();
         }
 
-        // ✅ Approve Handler
+       
         public async Task<IActionResult> OnPostApproveAsync(int id)
         {
             await _pharmacyService.ApprovePharmacyAsync(id);
             return RedirectToPage();
         }
 
-        // ✅ Delete Handler
+       
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
             await _pharmacyService.DeletePharmacyAsync(id);
