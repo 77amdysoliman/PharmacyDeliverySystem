@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using pharmacy.domin.Entites;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace pharmacy.infrastructuree.Data.Configurations
 {
@@ -32,13 +27,12 @@ namespace pharmacy.infrastructuree.Data.Configurations
             builder.Property(x => x.Notes)
                 .HasMaxLength(1000);
 
-            // Relationship مع User
-            builder.HasOne(x => x.user)
-                .WithMany(x => x.Orders)
-                .HasForeignKey(x => x.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+            // ✅ UserId string مش Relationship
+            builder.Property(x => x.UserId)
+                .IsRequired()
+                .HasMaxLength(450);
 
-            // Relationship مع Pharmacy
+            // Relationship مع Pharmacy بس
             builder.HasOne(x => x.Pharmacy)
                 .WithMany(x => x.Orders)
                 .HasForeignKey(x => x.PharmacyId)

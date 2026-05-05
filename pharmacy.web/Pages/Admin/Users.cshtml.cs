@@ -26,7 +26,7 @@ namespace pharmacy.web.Pages.Admin
                 Name = u.FullName,
                 Email = u.Email,
                 Phone = u.Phone,
-                OrdersCount = orders.Count(o => o.UserId == u.Id),
+                OrdersCount = orders.Count(o => o.UserId == u.Id.ToString()),
 
                 // ✅ مظبوطة
                 IsActive = u.IsActive

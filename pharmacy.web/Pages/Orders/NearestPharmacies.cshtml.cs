@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using pharmacy.domin.Entites;
@@ -7,7 +8,7 @@ using pharmacy.domin.Identity;
 using pharmacy.infrastructuree.Data;
 
 
-namespace Pharmacy.Web.Pages
+namespace pharmacy.web.Pages.Orders
 {
     [Authorize]
     public class NearestPharmaciesModel : PageModel
@@ -21,7 +22,23 @@ namespace Pharmacy.Web.Pages
             _userManager = userManager;
         }
 
-        public List<(pharmacy.domin.Entites.Pharmacy Pharmacy, double Distance)> Pharmacies { get; set; } = new();
+        [BindProperty(SupportsGet = true)]
+        public decimal MedicinePrice { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public int MedicineId { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public double UserLatitude { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public double UserLongitude { get; set; }
+
+        // ✅ ضيف SupportsGet
+        [BindProperty(SupportsGet = true)]
+        public string MedicineName { get; set; } = string.Empty;
+
+        public List<(domin.Entites.Pharmacy Pharmacy, double Distance)> Pharmacies { get; set; } = new();
 
         public async Task OnGetAsync()
         {
