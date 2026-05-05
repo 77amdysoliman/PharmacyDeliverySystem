@@ -18,8 +18,7 @@ namespace pharmacy.Application.DTOs
         public string? Notes { get; set; }
         public string UserName { get; set; }
         public string PharmacyName { get; set; }
-        public int UserId { get; set; }      // ✅ ضيف دا
-        public int PharmacyId { get; set; }
+
         public List<OrderItemDto> Items { get; set; } = new();
     }
 

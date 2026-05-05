@@ -278,7 +278,7 @@
     const wrapper  = document.getElementById('toggleWrapper');
     const label    = document.getElementById('toggleLabel');
 
-    // ✅ تحديث الـ UI بناءً على القيمة الحالية لما الصفحة تفتح
+ 
     function updateToggle() {
         if (checkbox.checked) {
             wrapper.classList.add('is-active');
@@ -289,10 +289,9 @@
         }
     }
 
-    // تشغيل لما الصفحة تفتح
     updateToggle();
 
-    // تشغيل لما المستخدم يضغط
+    
     wrapper.addEventListener('click', function () {
         checkbox.checked = !checkbox.checked;
         updateToggle();

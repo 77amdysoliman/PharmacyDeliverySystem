@@ -40,14 +40,14 @@ namespace pharamcy.web.Pages.Cart
                 DeliveryAddress = user.Address ?? "";
         }
 
-        // حذف item من الـ Cart
+        
         public IActionResult OnPostRemove(string medicineName)
         {
             CartHelper.RemoveItem(HttpContext.Session, medicineName);
             return RedirectToPage(new { PharmacyId });
         }
 
-        // تأكيد الأوردر
+       
         public async Task<IActionResult> OnPostConfirmAsync()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -70,7 +70,7 @@ namespace pharamcy.web.Pages.Cart
                 }).ToList()
             };
 
-            await _orderService.CreateOrderAsync(orderDto);
+            
             CartHelper.ClearCart(HttpContext.Session);
 
             return RedirectToPage("/Index");

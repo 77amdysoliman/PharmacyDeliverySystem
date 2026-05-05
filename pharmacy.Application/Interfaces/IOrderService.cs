@@ -18,7 +18,7 @@ namespace pharmacy.Application.Interfaces
 
         Task<OrderDto?> GetOrderByIdAsync(int id);
 
-        Task<OrderDto> CreateOrderAsync(OrderDto orderDto);
+
 
         Task UpdateOrderStatusAsync(int orderId, string status);
     }

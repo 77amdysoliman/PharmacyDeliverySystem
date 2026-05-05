@@ -149,45 +149,8 @@ namespace pharmacy.Application.Sevices
             };
         }
 
-        // بيعمل طلب جديد
-        public async Task<OrderDto> CreateOrderAsync(OrderDto orderDto)
-        {
-            var order = new Order
-            {
-                OrderDate = DateTime.UtcNow,
-                Status = OrderStatus.Pending,
-                TotalPrice = orderDto.Items.Sum(i => i.Quantity * i.UnitPrice),
-                DeliveryAddress = orderDto.DeliveryAddress,
-                Notes = orderDto.Notes,
-                UserId = orderDto.UserId,     
-                PharmacyId = orderDto.PharmacyId, 
-                UserId = orderDto.UserId,
-                PharmacyId = orderDto.PharmacyId,
-            };
-
-            await _unitOfWork.Orders.AddAsync(order);
-            await _unitOfWork.CompleteAsync();
-
-            foreach (var item in orderDto.Items)
-            {
-                var orderItem = new OrderItem
-                {
-                    OrderId = order.Id,
-                    MedicineId = item.MedicineId,
-                    Quantity = item.Quantity,
-                    UnitPrice = item.UnitPrice,
-                };
-                await _unitOfWork.OrderItems.AddAsync(orderItem);
-            }
-
-            await _unitOfWork.CompleteAsync();
-
-            orderDto.Id = order.Id;
-            orderDto.Status = order.Status.ToString();
-            orderDto.TotalPrice = order.TotalPrice;
-
-            return orderDto;
-        }
+        
+        
 
         // بيغير Status الطلب
         public async Task UpdateOrderStatusAsync(int orderId, string status)
