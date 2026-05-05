@@ -42,24 +42,51 @@
             <!-- Password -->
             <div style="margin-bottom:16px;">
                 <label style="font-size:13px; font-weight:600; color:#374151;">Password *</label>
-                <input asp-for="Input.Password" type="password" placeholder="Min 6 characters"
-                       style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:10px; margin-top:6px; font-size:14px; box-sizing:border-box; outline:none;" />
+                <div style="position:relative; margin-top:6px;">
+                    <input asp-for="Input.Password" id="password" type="password" placeholder="Min 6 characters"
+                           style="width:100%; padding:12px 44px 12px 14px; border:1.5px solid #e2e8f0; border-radius:10px; font-size:14px; box-sizing:border-box; outline:none;" />
+                    <button type="button" onclick="togglePassword('password', 'eyeIcon1')"
+                            style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#94a3b8; padding:0;">
+                        <svg id="eyeIcon1" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </button>
+                </div>
                 <span asp-validation-for="Input.Password" style="color:#dc2626; font-size:12px; margin-top:4px; display:block;"></span>
             </div>
 
             <!-- Confirm Password -->
-            <div style="margin-bottom:24px;">
+            <div style="margin-bottom:16px;">
                 <label style="font-size:13px; font-weight:600; color:#374151;">Confirm Password *</label>
-                <input asp-for="Input.ConfirmPassword" type="password" placeholder="Repeat your password"
-                       style="width:100%; padding:12px 14px; border:1.5px solid #e2e8f0; border-radius:10px; margin-top:6px; font-size:14px; box-sizing:border-box; outline:none;" />
+                <div style="position:relative; margin-top:6px;">
+                    <input asp-for="Input.ConfirmPassword" id="confirmPassword" type="password" placeholder="Repeat your password"
+                           style="width:100%; padding:12px 44px 12px 14px; border:1.5px solid #e2e8f0; border-radius:10px; font-size:14px; box-sizing:border-box; outline:none;" />
+                    <button type="button" onclick="togglePassword('confirmPassword', 'eyeIcon2')"
+                            style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#94a3b8; padding:0;">
+                        <svg id="eyeIcon2" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </button>
+                </div>
+                <!-- Client-side match validation -->
+                <span id="confirmError" style="color:#dc2626; font-size:12px; margin-top:4px; display:none;">
+                    ❌ Passwords do not match
+                </span>
+                <span id="confirmSuccess" style="color:#16a34a; font-size:12px; margin-top:4px; display:none;">
+                    ✅ Passwords match
+                </span>
                 <span asp-validation-for="Input.ConfirmPassword" style="color:#dc2626; font-size:12px; margin-top:4px; display:block;"></span>
             </div>
 
             <!-- Submit -->
-            <button type="submit"
+            <button type="submit" id="submitBtn"
                     style="width:100%; background:#2563eb; color:white; border:none; padding:14px; border-radius:10px; font-size:15px; font-weight:600; cursor:pointer;">
                 Create Account
             </button>
+
+       
 
             <!-- Login Link -->
             <p style="text-align:center; margin-top:20px; font-size:14px; color:#888;">
@@ -69,7 +96,51 @@
         </form>
     </div>
 </div>
+<script>
+    // Eye toggle
+    function togglePassword(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.innerHTML = `
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>`;
+        } else {
+            input.type = 'password';
+            icon.innerHTML = `
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>`;
+        }
+    }
 
+    // Password match validation
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirmPassword');
+    const confirmError = document.getElementById('confirmError');
+    const confirmSuccess = document.getElementById('confirmSuccess');
+
+    function checkMatch() {
+        if (confirmPassword.value === '') {
+            confirmError.style.display = 'none';
+            confirmSuccess.style.display = 'none';
+            return;
+        }
+        if (password.value === confirmPassword.value) {
+            confirmError.style.display = 'none';
+            confirmSuccess.style.display = 'block';
+            confirmPassword.style.borderColor = '#16a34a';
+        } else {
+            confirmError.style.display = 'block';
+            confirmSuccess.style.display = 'none';
+            confirmPassword.style.borderColor = '#dc2626';
+        }
+    }
+
+    confirmPassword.addEventListener('input', checkMatch);
+    password.addEventListener('input', checkMatch);
+</script>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
