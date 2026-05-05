@@ -186,8 +186,8 @@ namespace pharmacy.Application.Sevices
 
             return orderDto;
         }
-            return orderDto;
-        }
+            
+        
 
         // بيغير Status الطلب
         public async Task UpdateOrderStatusAsync(int orderId, string status)
