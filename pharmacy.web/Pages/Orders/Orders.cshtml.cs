@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -8,6 +9,8 @@ using pharmacy.domin.Interfaces;
 
 namespace pharmacy.web.Pages.Orders
 {
+
+
     public class OrdersModel : PageModel
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -35,6 +38,8 @@ namespace pharmacy.web.Pages.Orders
 
         [BindProperty(SupportsGet = true)]
         public string? AvailFilter { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string? MedicineName { get; set; }
 
         public OrdersModel(
             IUnitOfWork unitOfWork,
@@ -104,6 +109,13 @@ namespace pharmacy.web.Pages.Orders
                 .Skip((CurrentPage - 1) * PageSize)
                 .Take(PageSize)
                 .ToList();
+
+            if (!string.IsNullOrEmpty(MedicineName))
+            {
+                Medicines = Medicines
+                    .Where(m => m.Name.Contains(MedicineName, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
         }
     }
 }

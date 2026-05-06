@@ -20,6 +20,11 @@ namespace Pharmacy.web.Pages.Medicines
 
         [TempData]
         public string? SuccessMessage { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public int CurrentPage { get; set; } = 1;
+        public int TotalPages { get; set; }
+        public int PageSize { get; set; } = 10;
+        public int TotalCount { get; set; }
 
         public IndexModel(IMedicineService medicineService)
         {
@@ -28,11 +33,21 @@ namespace Pharmacy.web.Pages.Medicines
 
         public async Task OnGetAsync()
         {
-            Medicines = string.IsNullOrEmpty(SearchTerm)
+            var allMedicines = string.IsNullOrEmpty(SearchTerm)
                 ? await _medicineService.GetAllMedicinesAsync()
                 : await _medicineService.SearchMedicinesAsync(SearchTerm);
 
             Categories = await _medicineService.GetAllCategoriesAsync();
+
+            TotalCount = allMedicines.Count();
+            TotalPages = (int)Math.Ceiling(TotalCount / (double)PageSize);
+            CurrentPage = Math.Max(1, Math.Min(CurrentPage, TotalPages == 0 ? 1 : TotalPages));
+
+            Medicines = allMedicines
+                .Skip((CurrentPage - 1) * PageSize)
+                .Take(PageSize)
+                .ToList();
+
         }
 
         public async Task<IActionResult> OnPostCreateAsync()

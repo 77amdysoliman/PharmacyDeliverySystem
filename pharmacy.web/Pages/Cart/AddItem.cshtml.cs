@@ -36,6 +36,8 @@ namespace pharamcy.web.Pages.Cart
                     Quantity = Quantity,
                     UnitPrice = UnitPrice
                 });
+                HttpContext.Session.SetInt32("PharmacyId", PharmacyId);
+
             }
 
             return RedirectToPage("/Cart/Index", new { PharmacyId });

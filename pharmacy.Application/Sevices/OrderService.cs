@@ -159,8 +159,8 @@ namespace pharmacy.Application.Sevices
                 TotalPrice = orderDto.Items.Sum(i => i.Quantity * i.UnitPrice),
                 DeliveryAddress = orderDto.DeliveryAddress,
                 Notes = orderDto.Notes,
-                UserId = orderDto.UserId,     
-                PharmacyId = orderDto.PharmacyId, 
+                UserId = orderDto.UserId,
+                PharmacyId = orderDto.PharmacyId,
             };
 
             await _unitOfWork.Orders.AddAsync(order);
@@ -168,6 +168,7 @@ namespace pharmacy.Application.Sevices
 
             foreach (var item in orderDto.Items)
             {
+                // ✅ ضيف الـ OrderItem
                 var orderItem = new OrderItem
                 {
                     OrderId = order.Id,
@@ -176,6 +177,26 @@ namespace pharmacy.Application.Sevices
                     UnitPrice = item.UnitPrice,
                 };
                 await _unitOfWork.OrderItems.AddAsync(orderItem);
+
+                // ✅ قلل الـ Stock
+                var pharmacyMedicines = await _unitOfWork.PharmacyMedicines.GetAllAsync();
+                var pharmacyMedicine = pharmacyMedicines
+                    .FirstOrDefault(pm => pm.MedicineId == item.MedicineId
+                                       && pm.PharmacyId == orderDto.PharmacyId);
+
+                if (pharmacyMedicine != null)
+                {
+                    pharmacyMedicine.Stock -= item.Quantity;
+
+                    // لو الـ Stock وصل صفر يبقى مش متاح
+                    if (pharmacyMedicine.Stock <= 0)
+                    {
+                        pharmacyMedicine.Stock = 0;
+                        pharmacyMedicine.IsAvailable = false;
+                    }
+
+                    _unitOfWork.PharmacyMedicines.Update(pharmacyMedicine);
+                }
             }
 
             await _unitOfWork.CompleteAsync();
@@ -186,8 +207,8 @@ namespace pharmacy.Application.Sevices
 
             return orderDto;
         }
-            
-        
+
+
 
         // بيغير Status الطلب
         public async Task UpdateOrderStatusAsync(int orderId, string status)
@@ -195,9 +216,34 @@ namespace pharmacy.Application.Sevices
             var order = await _unitOfWork.Orders.GetByIdAsync(orderId);
             if (order == null) return;
 
+            var oldStatus = order.Status;
             order.Status = Enum.Parse<OrderStatus>(status);
             _unitOfWork.Orders.Update(order);
             await _unitOfWork.CompleteAsync();
+
+            // ✅ لو اترفض يرجع الـ Stock
+            if (status == "Cancelled" && oldStatus == OrderStatus.Pending)
+            {
+                var orderItems = await _unitOfWork.OrderItems.GetAllAsync();
+                var items = orderItems.Where(oi => oi.OrderId == orderId).ToList();
+                var pharmacyMedicines = await _unitOfWork.PharmacyMedicines.GetAllAsync();
+
+                foreach (var item in items)
+                {
+                    var pharmacyMedicine = pharmacyMedicines
+                        .FirstOrDefault(pm => pm.MedicineId == item.MedicineId
+                                           && pm.PharmacyId == order.PharmacyId);
+
+                    if (pharmacyMedicine != null)
+                    {
+                        // ✅ رجّع الـ Stock
+                        pharmacyMedicine.Stock += item.Quantity;
+                        pharmacyMedicine.IsAvailable = true;
+                        _unitOfWork.PharmacyMedicines.Update(pharmacyMedicine);
+                    }
+                }
+                await _unitOfWork.CompleteAsync();
+            }
         }
     }
 }

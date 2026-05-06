@@ -87,6 +87,40 @@
                 }
             </tbody>
         </table>
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
+        {
+            <div style="display:flex; justify-content:center; align-items:center; gap:8px; margin-top:20px;">
+
+                @if (Model.CurrentPage > 1)
+                {
+                    <a href="?CurrentPage=@(Model.CurrentPage - 1)"
+                           style="padding:8px 16px; background:white; border:1px solid #e2e8f0; border-radius:8px; text-decoration:none; color:#374151; font-weight:500;">
+                        ← Prev
+                    </a>
+                }
+
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <a href="?CurrentPage=@i"
+                           style="padding:8px 14px; background:@(i == Model.CurrentPage ? "#2563eb" : "white"); color:@(i == Model.CurrentPage ? "white" : "#374151"); border:1px solid @(i == Model.CurrentPage ? "#2563eb" : "#e2e8f0"); border-radius:8px; text-decoration:none; font-weight:500;">
+                        @i
+                    </a>
+                }
+
+                @if (Model.CurrentPage < Model.TotalPages)
+                {
+                    <a href="?CurrentPage=@(Model.CurrentPage + 1)"
+                           style="padding:8px 16px; background:white; border:1px solid #e2e8f0; border-radius:8px; text-decoration:none; color:#374151; font-weight:500;">
+                        Next →
+                    </a>
+                }
+
+            </div>
+            <p style="text-align:center; color:#888; font-size:13px; margin-top:10px;">
+                Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) - @(Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalOrders)) of @Model.TotalOrders orders
+            </p>
+        }
     </div>
 
 </div>

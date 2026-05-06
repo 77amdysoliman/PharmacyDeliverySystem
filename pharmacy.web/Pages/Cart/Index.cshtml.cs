@@ -35,6 +35,8 @@ namespace pharamcy.web.Pages.Cart
         public async Task OnGetAsync()
         {
             CartItems = CartHelper.GetCart(HttpContext.Session);
+            if (PharmacyId == 0)
+                PharmacyId = HttpContext.Session.GetInt32("PharmacyId") ?? 0;
             var user = await _userManager.GetUserAsync(User);
             if (user != null)
                 DeliveryAddress = user.Address ?? "";
@@ -55,6 +57,8 @@ namespace pharamcy.web.Pages.Cart
 
             var cart = CartHelper.GetCart(HttpContext.Session);
             if (!cart.Any()) return Page();
+            if (PharmacyId == 0)
+                PharmacyId = HttpContext.Session.GetInt32("PharmacyId") ?? 0;
 
             var orderDto = new OrderDto
             {
@@ -75,6 +79,7 @@ namespace pharamcy.web.Pages.Cart
             await _orderService.CreateOrderAsync(orderDto);
 
             CartHelper.ClearCart(HttpContext.Session);
+            HttpContext.Session.Remove("PharmacyId");
 
             return RedirectToPage("/MyOrders/Index");
         }
