@@ -1,18 +1,12 @@
 ﻿@page
 @model pharmacy.web.Pages.Admin.ReportsModel
 @{
-   
     Layout = "_LayoutAdmin";
 }
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
 <style>
-    /* ─── Page Background ─── */
-  * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
         font-family: 'DM Sans', sans-serif;
@@ -21,12 +15,11 @@
     }
 
     .reports-wrapper {
-          max-width: 1100px;
+        max-width: 1100px;
         margin: 0 auto;
         padding: 40px 24px;
     }
 
-    /* ─── Header ─── */
     .rpt-header { margin-bottom: 28px; }
     .rpt-header h2 {
         font-size: 1.65rem;
@@ -36,7 +29,6 @@
     }
     .rpt-header p { color: #888; font-size: 0.875rem; margin: 0; }
 
-    /* ─── Top Stats Cards ─── */
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -50,8 +42,7 @@
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
     .stat-icon {
-        width: 40px;
-        height: 40px;
+        width: 40px; height: 40px;
         border-radius: 10px;
         display: flex;
         align-items: center;
@@ -69,18 +60,9 @@
         color: #1a1a2e;
         margin: 0 0 4px;
     }
-    .stat-card .stat-label {
-        font-size: 0.85rem;
-        color: #777;
-        margin: 0 0 6px;
-    }
-    .stat-card .stat-change {
-        font-size: 0.8rem;
-        color: #27ae60;
-        font-weight: 500;
-    }
+    .stat-card .stat-label { font-size: 0.85rem; color: #777; margin: 0 0 6px; }
+    .stat-card .stat-change { font-size: 0.8rem; color: #27ae60; font-weight: 500; }
 
-    /* ─── Report Boxes ─── */
     .report-box {
         background: #fff;
         border-radius: 14px;
@@ -88,8 +70,6 @@
         margin-bottom: 18px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
-
-    /* Header row: title LEFT, button RIGHT */
     .report-box-header {
         display: flex;
         justify-content: space-between;
@@ -102,13 +82,8 @@
         color: #1a1a2e;
         margin: 0 0 4px;
     }
-    .report-box-header .report-title-block p {
-        font-size: 0.8rem;
-        color: #aaa;
-        margin: 0;
-    }
+    .report-box-header .report-title-block p { font-size: 0.8rem; color: #aaa; margin: 0; }
 
-    /* ─── Download Button ─── */
     .download-btn {
         display: inline-flex;
         align-items: center;
@@ -134,14 +109,8 @@
     }
     .download-btn i { font-size: 0.8rem; }
 
-    /* ─── Divider ─── */
-    .report-divider {
-        border: none;
-        border-top: 1px solid #f0f0f5;
-        margin: 16px 0;
-    }
+    .report-divider { border: none; border-top: 1px solid #f0f0f5; margin: 16px 0; }
 
-    /* ─── Stats Row inside report ─── */
     .report-stats-row {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -151,16 +120,10 @@
         font-size: 0.78rem;
         color: #aaa;
         margin: 0 0 4px;
-        text-transform: none;
     }
-    .report-stat strong {
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: #1a1a2e;
-    }
+    .report-stat strong { font-size: 1.05rem; font-weight: 700; color: #1a1a2e; }
     .report-stat strong.green-text { color: #27ae60; }
 
-    /* ─── Responsive ─── */
     @@media (max-width: 768px) {
         .stats-grid { grid-template-columns: 1fr; }
         .report-stats-row { grid-template-columns: 1fr; gap: 12px; }
@@ -169,15 +132,13 @@
 
 <div class="reports-wrapper">
 
-    <!-- Page Header -->
     <div class="rpt-header">
         <h2>Reports &amp; Statistics</h2>
         <p>Comprehensive reports on system performance</p>
     </div>
 
-    <!-- ── Top 3 Stat Cards ── -->
+    <!-- Top 3 Stat Cards -->
     <div class="stats-grid">
-
         <div class="stat-card">
             <div class="stat-icon blue">
                 <i class="fa-solid fa-chart-line"></i>
@@ -204,10 +165,9 @@
             <p class="stat-label">Average Rating</p>
             <span class="stat-change">+0.2 from last month</span>
         </div>
-
     </div>
 
-    <!-- ── Monthly Sales Report ── -->
+    <!-- Monthly Sales Report -->
     <div class="report-box">
         <div class="report-box-header">
             <div class="report-title-block">
@@ -219,9 +179,7 @@
                 <i class="fa-solid fa-download"></i> Download
             </a>
         </div>
-
         <hr class="report-divider" />
-
         <div class="report-stats-row">
             <div class="report-stat">
                 <p>Revenue</p>
@@ -238,29 +196,28 @@
         </div>
     </div>
 
-    <!-- ── Users Report ── -->
+    <!-- Users Report -->
     <div class="report-box">
         <div class="report-box-header">
             <div class="report-title-block">
                 <h4>Users Report</h4>
-                <p>New and active users statistics</p>
+                <p>New and all registered users statistics</p>
                 <p>Report date: @DateTime.Today.ToShortDateString()</p>
             </div>
             <a asp-page-handler="Download" class="download-btn">
                 <i class="fa-solid fa-download"></i> Download
             </a>
         </div>
-
         <hr class="report-divider" />
-
         <div class="report-stats-row">
+            
             <div class="report-stat">
-                <p>NewUsers</p>
-                <strong>@Model.NewUsers.ToString("N0")</strong>
+                <p>Total Users</p>  
+                <strong>@Model.TotalUsers.ToString("N0")</strong>
             </div>
             <div class="report-stat">
-                <p>ActiveUsers</p>
-                <strong>@Model.ActiveUsers.ToString("N0")</strong>
+                <p>Active  Users </p>
+                <strong>@Model.NewUsers.ToString("N0")</strong>
             </div>
             <div class="report-stat">
                 <p>Retention</p>
@@ -269,7 +226,7 @@
         </div>
     </div>
 
-    <!-- ── Pharmacies Report ── -->
+    <!-- Pharmacies Report -->
     <div class="report-box">
         <div class="report-box-header">
             <div class="report-title-block">
@@ -281,20 +238,18 @@
                 <i class="fa-solid fa-download"></i> Download
             </a>
         </div>
-
         <hr class="report-divider" />
-
         <div class="report-stats-row">
             <div class="report-stat">
-                <p>TotalPharmacies</p>
+                <p>Total Pharmacies</p>
                 <strong>@Model.TotalPharmacies</strong>
             </div>
             <div class="report-stat">
-                <p>ActivePharmacies</p>
+                <p>Active Pharmacies</p>
                 <strong>@Model.ActivePharmacies</strong>
             </div>
             <div class="report-stat">
-                <p>AvgRating</p>
+                <p>Avg Rating</p>
                 <strong>@Model.AvgRating.ToString("F1") ⭐</strong>
             </div>
         </div>

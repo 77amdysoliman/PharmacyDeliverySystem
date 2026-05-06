@@ -28,6 +28,7 @@ namespace pharmacy.web
             builder.Services.AddScoped<IMedicineService, MedicineService>();
             builder.Services.AddScoped<IPharmacyService, PharmacyService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
             // Add services to the container.
             builder.Services.AddDbContext<AppDbContext>(options =>
           options.UseSqlServer(builder.Configuration

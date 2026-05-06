@@ -55,7 +55,8 @@
             <button onclick="closeModal()" style="background:none; border:none; font-size:22px; cursor:pointer; color:#888;">✕</button>
         </div>
 
-        <form method="post" id="medicineForm"asp-page-handler="Create">
+        <!-- ✅ FIX: removed asp-page-handler from form tag, JS will set action dynamically -->
+        <form method="post" id="medicineForm">
             <input type="hidden" asp-for="Medicine.Id" id="medicineId" />
 
             <div style="margin-bottom:15px;">
@@ -73,17 +74,17 @@
             </div>
 
             <div style="margin-bottom:15px;">
-    <label style="font-size:14px; font-weight:600; color:#374151;">Category *</label>
-    <select asp-for="Medicine.CategoryId" id="Medicine_CategoryId"
-            style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:8px; margin-top:5px; font-size:14px; box-sizing:border-box; background:white;">
-        <option value="">-- Select Category --</option>
-        @foreach (var category in Model.Categories)
-        {
-            <option value="@category.Id">@category.Name</option>
-        }
-    </select>
-    <span asp-validation-for="Medicine.CategoryId" style="color:#ef4444; font-size:12px;"></span>
-</div>
+                <label style="font-size:14px; font-weight:600; color:#374151;">Category *</label>
+                <select asp-for="Medicine.CategoryId" id="Medicine_CategoryId"
+                        style="width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:8px; margin-top:5px; font-size:14px; box-sizing:border-box; background:white;">
+                    <option value="">-- Select Category --</option>
+                    @foreach (var category in Model.Categories)
+                    {
+                        <option value="@category.Id">@category.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="Medicine.CategoryId" style="color:#ef4444; font-size:12px;"></span>
+            </div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:15px;">
                 <div>
@@ -108,7 +109,16 @@
 
             <div style="margin-bottom:20px;">
                 <label style="display:flex; align-items:center; gap:8px; font-size:14px; font-weight:600; color:#374151; cursor:pointer;">
-                    <input asp-for="Medicine.RequiresPrescription" type="checkbox" style="width:16px; height:16px;" />
+                    <!-- ✅ FIX: checkbox + hidden input to ensure value is always submitted -->
+                    <input type="checkbox" 
+                           id="Medicine_RequiresPrescription"
+                           style="width:16px; height:16px;"
+                           onchange="syncCheckbox(this)" />
+                    <!-- ✅ hidden input carries the actual value to the server -->
+                    <input type="hidden" 
+                           id="Medicine_RequiresPrescription_Hidden" 
+                           name="Medicine.RequiresPrescription" 
+                           value="false" />
                     Requires Prescription
                 </label>
             </div>
@@ -181,6 +191,7 @@
                     <th style="text-align:left; padding:12px; color:#888; font-weight:600;">Category</th>
                     <th style="text-align:left; padding:12px; color:#888; font-weight:600;">Price</th>
                     <th style="text-align:left; padding:12px; color:#888; font-weight:600;">Stock</th>
+                    <th style="text-align:left; padding:12px; color:#888; font-weight:600;">Prescription</th>
                     <th style="text-align:left; padding:12px; color:#888; font-weight:600;">Status</th>
                     <th style="text-align:left; padding:12px; color:#888; font-weight:600;">Actions</th>
                 </tr>
@@ -194,6 +205,16 @@
                         <td style="padding:16px;">@medicine.Price.ToString("N0") EGP</td>
                         <td style="padding:16px;">@medicine.Stock</td>
                         <td style="padding:16px;">
+                            @if (medicine.RequiresPrescription)
+                            {
+                                <span style="background:#fef9c3; color:#92400e; padding:5px 14px; border-radius:20px; font-size:13px;">📋 Required</span>
+                            }
+                            else
+                            {
+                                <span style="background:#f1f5f9; color:#64748b; padding:5px 14px; border-radius:20px; font-size:13px;">No</span>
+                            }
+                        </td>
+                        <td style="padding:16px;">
                             @if (medicine.IsAvailable && medicine.Stock > 0)
                             {
                                 <span style="background:#dcfce7; color:#16a34a; padding:5px 14px; border-radius:20px; font-size:13px;">Available</span>
@@ -205,17 +226,17 @@
                         </td>
                         <td style="padding:16px;">
                             <div style="display:flex; gap:8px;">
-                              <button onclick="openEditModal(
-                              @medicine.Id, 
-                               '@medicine.Name', 
-                                  '@Html.Raw(medicine.Description ?? "")', 
-                                     @medicine.Price, 
-                                      @medicine.Stock, 
-                                        '@medicine.Manufacturer', 
-                                             @medicine.RequiresPrescription.ToString().ToLower(),
-                                      @medicine.CategoryId)"
-                                  style="background:#eff6ff; color:#3b82f6; border:none; width:36px; height:36px; border-radius:8px; cursor:pointer; font-size:16px;">✏️
-                                   </button>
+                                <button onclick="openEditModal(
+                                    @medicine.Id,
+                                    '@Html.Raw(medicine.Name.Replace("'", "\\'"))',
+                                    '@Html.Raw((medicine.Description ?? "").Replace("'", "\\'"))',
+                                    @medicine.Price,
+                                    @medicine.Stock,
+                                    '@Html.Raw((medicine.Manufacturer ?? "").Replace("'", "\\'"))',
+                                    @medicine.RequiresPrescription.ToString().ToLower(),
+                                    @medicine.CategoryId)"
+                                        style="background:#eff6ff; color:#3b82f6; border:none; width:36px; height:36px; border-radius:8px; cursor:pointer; font-size:16px;">✏️
+                                </button>
                                 <button onclick="openDeleteModal(@medicine.Id)"
                                         style="background:#fff1f2; color:#ef4444; border:none; width:36px; height:36px; border-radius:8px; cursor:pointer; font-size:16px;">
                                     🗑️
@@ -226,42 +247,39 @@
                 }
             </tbody>
         </table>
+
         <!-- Pagination -->
-@if (Model.TotalPages > 1)
-{
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; padding:0 5px;">
-        
-        <p style="color:#888; font-size:13px; margin:0;">
-            Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) - @(Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalCount)) of @Model.TotalCount medicines
-        </p>
-
-        <div style="display:flex; gap:6px;">
-            @if (Model.CurrentPage > 1)
-            {
-                <a href="?CurrentPage=@(Model.CurrentPage - 1)&SearchTerm=@Model.SearchTerm"
-                   style="padding:8px 14px; background:white; border:1px solid #e2e8f0; border-radius:8px; text-decoration:none; color:#374151; font-weight:500; font-size:13px;">
-                    ← Prev
-                </a>
-            }
-
-            @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
-            {
-                <a href="?CurrentPage=@i&SearchTerm=@Model.SearchTerm"
-                   style="padding:8px 14px; background:@(i == Model.CurrentPage ? "#3b82f6" : "white"); color:@(i == Model.CurrentPage ? "white" : "#374151"); border:1px solid @(i == Model.CurrentPage ? "#3b82f6" : "#e2e8f0"); border-radius:8px; text-decoration:none; font-weight:500; font-size:13px;">
-                    @i
-                </a>
-            }
-
-            @if (Model.CurrentPage < Model.TotalPages)
-            {
-                <a href="?CurrentPage=@(Model.CurrentPage + 1)&SearchTerm=@Model.SearchTerm"
-                   style="padding:8px 14px; background:white; border:1px solid #e2e8f0; border-radius:8px; text-decoration:none; color:#374151; font-weight:500; font-size:13px;">
-                    Next →
-                </a>
-            }
-        </div>
-    </div>
-}
+        @if (Model.TotalPages > 1)
+        {
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; padding:0 5px;">
+                <p style="color:#888; font-size:13px; margin:0;">
+                    Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) - @(Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalCount)) of @Model.TotalCount medicines
+                </p>
+                <div style="display:flex; gap:6px;">
+                    @if (Model.CurrentPage > 1)
+                    {
+                        <a href="?CurrentPage=@(Model.CurrentPage - 1)&SearchTerm=@Model.SearchTerm"
+                           style="padding:8px 14px; background:white; border:1px solid #e2e8f0; border-radius:8px; text-decoration:none; color:#374151; font-weight:500; font-size:13px;">
+                            ← Prev
+                        </a>
+                    }
+                    @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                    {
+                        <a href="?CurrentPage=@i&SearchTerm=@Model.SearchTerm"
+                           style="padding:8px 14px; background:@(i == Model.CurrentPage ? "#3b82f6" : "white"); color:@(i == Model.CurrentPage ? "white" : "#374151"); border:1px solid @(i == Model.CurrentPage ? "#3b82f6" : "#e2e8f0"); border-radius:8px; text-decoration:none; font-weight:500; font-size:13px;">
+                            @i
+                        </a>
+                    }
+                    @if (Model.CurrentPage < Model.TotalPages)
+                    {
+                        <a href="?CurrentPage=@(Model.CurrentPage + 1)&SearchTerm=@Model.SearchTerm"
+                           style="padding:8px 14px; background:white; border:1px solid #e2e8f0; border-radius:8px; text-decoration:none; color:#374151; font-weight:500; font-size:13px;">
+                            Next →
+                        </a>
+                    }
+                </div>
+            </div>
+        }
     </div>
 </div>
 
@@ -270,38 +288,56 @@
 }
 
 <script>
-     function openAddModal() {
-    document.getElementById('modalTitle').innerText = 'Add New Medicine';
-    document.getElementById('medicineForm').setAttribute('action', '?handler=Create');
-    document.getElementById('medicineId').value = 0;
-    document.getElementById('Medicine_Name').value = '';
-    document.getElementById('Medicine_Description').value = '';
-    document.getElementById('Medicine_Price').value = '';
-    document.getElementById('Medicine_Stock').value = 0;
-    document.getElementById('Medicine_Manufacturer').value = '';
-    document.getElementById('Medicine_RequiresPrescription').checked = false;
-    document.getElementById('Medicine_CategoryId').value = '';
-    showModal('medicineModal');
-}
+    // ✅ FIX: sync hidden input with checkbox state
+    function syncCheckbox(checkbox) {
+        document.getElementById('Medicine_RequiresPrescription_Hidden').value =
+            checkbox.checked ? 'true' : 'false';
+    }
 
+    function openAddModal() {
+        document.getElementById('modalTitle').innerText = 'Add New Medicine';
+        // ✅ FIX: set form action dynamically via JS
+        document.getElementById('medicineForm').action = '?handler=Create';
+        document.getElementById('medicineId').value = 0;
+        document.getElementById('Medicine_Name').value = '';
+        document.getElementById('Medicine_Description').value = '';
+        document.getElementById('Medicine_Price').value = '';
+        document.getElementById('Medicine_Stock').value = 0;
+        document.getElementById('Medicine_Manufacturer').value = '';
+        document.getElementById('Medicine_CategoryId').value = '';
 
-   function openEditModal(id, name, description, price, stock, manufacturer, requiresPrescription, categoryId) {
-    document.getElementById('modalTitle').innerText = 'Edit Medicine';
-    document.getElementById('medicineForm').setAttribute('action', '?handler=Edit');
-    document.getElementById('medicineId').value = id;
-    document.getElementById('Medicine_Name').value = name;
-    document.getElementById('Medicine_Description').value = description;
-    document.getElementById('Medicine_Price').value = price;
-    document.getElementById('Medicine_Stock').value = stock;
-    document.getElementById('Medicine_Manufacturer').value = manufacturer;
-    document.getElementById('Medicine_RequiresPrescription').checked = requiresPrescription;
-    document.getElementById('Medicine_CategoryId').value = categoryId;
-    showModal('medicineModal');
-}
+        // ✅ FIX: reset checkbox and hidden input together
+        var cb = document.getElementById('Medicine_RequiresPrescription');
+        cb.checked = false;
+        document.getElementById('Medicine_RequiresPrescription_Hidden').value = 'false';
+
+        showModal('medicineModal');
+    }
+
+    function openEditModal(id, name, description, price, stock, manufacturer, requiresPrescription, categoryId) {
+        document.getElementById('modalTitle').innerText = 'Edit Medicine';
+        // ✅ FIX: set form action dynamically via JS
+        document.getElementById('medicineForm').action = '?handler=Edit';
+        document.getElementById('medicineId').value = id;
+        document.getElementById('Medicine_Name').value = name;
+        document.getElementById('Medicine_Description').value = description;
+        document.getElementById('Medicine_Price').value = price;
+        document.getElementById('Medicine_Stock').value = stock;
+        document.getElementById('Medicine_Manufacturer').value = manufacturer;
+        document.getElementById('Medicine_CategoryId').value = categoryId;
+
+        // ✅ FIX: set checkbox AND hidden input from actual DB value
+        var cb = document.getElementById('Medicine_RequiresPrescription');
+        cb.checked = requiresPrescription;
+        document.getElementById('Medicine_RequiresPrescription_Hidden').value =
+            requiresPrescription ? 'true' : 'false';
+
+        showModal('medicineModal');
+    }
 
     function openDeleteModal(id) {
         document.getElementById('deleteId').value = id;
-        document.getElementById('deleteForm').setAttribute('action', '?handler=Delete');
+        document.getElementById('deleteForm').action = '?handler=Delete';
         showModal('deleteModal');
     }
 
@@ -317,7 +353,8 @@
     function closeDeleteModal() {
         document.getElementById('deleteModal').style.display = 'none';
     }
-        window.onload = function () {
+
+    window.onload = function () {
         var errors = document.querySelectorAll('[data-valmsg-for]');
         var hasErrors = false;
         errors.forEach(function (el) {
@@ -327,5 +364,4 @@
             showModal('medicineModal');
         }
     }
-
 </script>

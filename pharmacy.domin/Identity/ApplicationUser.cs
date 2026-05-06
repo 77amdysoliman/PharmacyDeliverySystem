@@ -14,7 +14,7 @@ namespace pharmacy.domin.Identity
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
+      //  public bool IsActive { get; set; }
         // لو كان Pharmacy Admin
         public int? PharmacyId { get; set; }
     }

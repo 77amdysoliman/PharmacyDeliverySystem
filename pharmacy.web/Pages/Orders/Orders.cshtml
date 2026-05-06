@@ -37,6 +37,7 @@
     .med-price { font-size:0.88rem; font-weight:700; color:#2563eb; margin-top:5px; }
     .badge-avail { display:inline-block; background:#dcfce7; color:#16a34a; font-size:11px; font-weight:600; padding:2px 8px; border-radius:10px; margin-top:4px; }
     .badge-unavail { display:inline-block; background:#fee2e2; color:#dc2626; font-size:11px; font-weight:600; padding:2px 8px; border-radius:10px; margin-top:4px; }
+    .badge-rx { display:inline-block; background:#fef9c3; color:#92400e; font-size:11px; font-weight:600; padding:2px 8px; border-radius:10px; margin-top:4px; margin-left:4px; }
     .btn-order { background:#16a34a; color:#fff; border:none; border-radius:10px; padding:10px 16px; font-size:0.8rem; font-weight:700; cursor:pointer; white-space:nowrap; text-decoration:none; display:inline-block; transition:background .18s; }
     .btn-order:hover { background:#15803d; color:white; }
     .btn-unavail { background:#f1f5f9; color:#94a3b8; border:none; border-radius:10px; padding:10px 16px; font-size:0.8rem; font-weight:600; cursor:not-allowed; white-space:nowrap; }
@@ -48,7 +49,53 @@
     .page-btn.active { background:#2563eb; color:white; border-color:#2563eb; font-weight:700; }
     .page-btn.disabled { pointer-events:none; color:#cbd5e1; border-color:#f1f5f9; }
     .page-info { text-align:center; margin-top:12px; color:#94a3b8; font-size:13px; }
+
+    /* Prescription Modal */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center; }
+    .modal-overlay.open { display:flex; }
+    .modal-box { background:white; border-radius:20px; padding:32px; width:100%; max-width:460px; box-shadow:0 8px 40px rgba(0,0,0,0.18); }
+    .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+    .modal-header h3 { font-size:18px; font-weight:700; color:#0f172a; }
+    .modal-close { background:none; border:none; font-size:22px; cursor:pointer; color:#94a3b8; line-height:1; }
+    .modal-warning { background:#fffbeb; border:1.5px solid #fbbf24; border-radius:10px; padding:14px 16px; margin-bottom:20px; }
+    .modal-warning p { font-size:13px; color:#92400e; font-weight:600; margin:0; }
+    .modal-label { font-size:14px; font-weight:600; color:#374151; display:block; margin-bottom:8px; }
+    .modal-file { width:100%; padding:10px; border:1.5px solid #e5e7eb; border-radius:10px; font-size:14px; margin-bottom:6px; }
+    .modal-error { color:#ef4444; font-size:12px; display:none; margin-bottom:14px; }
+    .modal-actions { display:flex; gap:10px; margin-top:20px; }
+    .btn-cancel { flex:1; padding:12px; border:1.5px solid #e2e8f0; border-radius:10px; background:white; font-weight:600; cursor:pointer; font-size:14px; }
+    .btn-proceed { flex:1; padding:12px; background:#16a34a; color:white; border:none; border-radius:10px; font-weight:700; cursor:pointer; font-size:14px; }
+    .btn-proceed:hover { background:#15803d; }
 </style>
+
+<!-- Prescription Upload Modal -->
+<div class="modal-overlay" id="prescriptionModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>💊 Prescription Required</h3>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+
+        <div class="modal-warning">
+            <p>⚠️ This medicine requires a valid prescription before ordering.</p>
+        </div>
+
+        <label class="modal-label">Upload Prescription Image *</label>
+        <input class="modal-file" type="file" id="prescriptionFile" accept="image/*"
+               onchange="handleFileChange()" />
+        <div class="modal-error" id="prescriptionError">Please upload a prescription image to continue.</div>
+
+        <div id="previewWrap" style="display:none; margin-bottom:12px;">
+            <img id="previewImg" src="" alt="Prescription Preview"
+                 style="width:100%; border-radius:10px; border:1px solid #e5e7eb; max-height:200px; object-fit:cover;" />
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            <button class="btn-proceed" onclick="proceedToOrder()">Proceed to Order →</button>
+        </div>
+    </div>
+</div>
 
 <div class="page-wrapper">
 
@@ -98,7 +145,6 @@
                 ✅ Available Only
             </a>
         </div>
-
     </form>
 
     <!-- Medicine Grid -->
@@ -130,18 +176,40 @@
                         {
                             <span class="badge-unavail">❌ Out of Stock</span>
                         }
+                        @if (m.RequiresPrescription)
+                        {
+                            <span class="badge-rx">📋 Prescription Required</span>
+                        }
                     </div>
                     @if (m.IsAvailable)
                     {
-                        <a class="btn-order"
-                           asp-page="/Orders/NearestPharmacies"
-                           asp-route-medicineId="@m.Id"
-                           asp-route-medicineName="@m.Name"
-                           asp-route-medicinePrice="@m.Price"
-                           asp-route-latitude="@Model.UserLatitude"
-                           asp-route-longitude="@Model.UserLongitude">
-                            Order Now
-                        </a>
+                        @if (m.RequiresPrescription)
+                        {
+                            <!-- Opens modal first, then navigates after upload -->
+                            <button class="btn-order"
+                                    onclick="openPrescriptionModal(
+                                        '@Url.Page("/Orders/NearestPharmacies", new {
+                                            medicineId   = m.Id,
+                                            medicineName = m.Name,
+                                            medicinePrice = m.Price,
+                                            latitude     = Model.UserLatitude,
+                                            longitude    = Model.UserLongitude
+                                        })')">
+                                Order Now
+                            </button>
+                        }
+                        else
+                        {
+                            <a class="btn-order"
+                               asp-page="/Orders/NearestPharmacies"
+                               asp-route-medicineId="@m.Id"
+                               asp-route-medicineName="@m.Name"
+                               asp-route-medicinePrice="@m.Price"
+                               asp-route-latitude="@Model.UserLatitude"
+                               asp-route-longitude="@Model.UserLongitude">
+                                Order Now
+                            </a>
+                        }
                     }
                     else
                     {
@@ -184,10 +252,65 @@
 
 <script>
     let searchTimer;
+    let pendingOrderUrl = '';
+
     function debounceSubmit() {
         clearTimeout(searchTimer);
         searchTimer = setTimeout(() => {
             document.getElementById('filterForm').submit();
         }, 500);
     }
+
+    function openPrescriptionModal(orderUrl) {
+        pendingOrderUrl = orderUrl;
+        document.getElementById('prescriptionFile').value = '';
+        document.getElementById('prescriptionError').style.display = 'none';
+        document.getElementById('previewWrap').style.display = 'none';
+        document.getElementById('previewImg').src = '';
+        document.getElementById('prescriptionModal').classList.add('open');
+    }
+
+    function closeModal() {
+        document.getElementById('prescriptionModal').classList.remove('open');
+        pendingOrderUrl = '';
+    }
+
+    function handleFileChange() {
+        const file = document.getElementById('prescriptionFile').files[0];
+        document.getElementById('prescriptionError').style.display = 'none';
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('previewWrap').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            document.getElementById('previewWrap').style.display = 'none';
+        }
+    }
+
+    function proceedToOrder() {
+        const file = document.getElementById('prescriptionFile').files[0];
+
+        if (!file) {
+            document.getElementById('prescriptionError').style.display = 'block';
+            return;
+        }
+
+        // Store the image in sessionStorage as base64 to pass to the next page
+        const reader = new FileReader();
+        reader.onload = e => {
+            sessionStorage.setItem('prescriptionImage', e.target.result);
+            sessionStorage.setItem('prescriptionFileName', file.name);
+            window.location.href = pendingOrderUrl;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('prescriptionModal').addEventListener('click', function (e) {
+        if (e.target === this) closeModal();
+    });
 </script>
