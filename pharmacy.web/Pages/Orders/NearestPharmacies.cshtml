@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "/Orders/NearestPharmacies"
 @model pharmacy.web.Pages.Orders.NearestPharmaciesModel
 @{
     ViewData["Title"] = "Nearest Pharmacies";
@@ -47,18 +47,22 @@
                 </div>
 
                 <!-- Buttons -->
+                <!-- Buttons -->
                 <div style="display:flex; gap:12px;">
-                    <a asp-page="/Cart/AddItem"
-                           asp-route-pharmacyId="@p.Id"
-                           asp-route-medicineId="@Model.MedicineId"
-                           asp-route-medicineName="@Model.MedicineName"
-                           asp-route-unitPrice="@Model.MedicinePrice"
-                           asp-route-latitude="@Model.UserLatitude"
-                           asp-route-longitude="@Model.UserLongitude"
+                    <form method="post" asp-page="/Cart/SavePrescription"
+                          enctype="multipart/form-data" style="flex:1;">
+                        <input type="hidden" name="PharmacyId" value="@p.Id" />
+                        <input type="hidden" name="MedicineId" value="@Model.MedicineId" />
+                        <input type="hidden" name="MedicineName" value="@Model.MedicineName" />
+                        <input type="hidden" name="UnitPrice" value="@Model.MedicinePrice" />
+                        <input type="hidden" name="prescriptionBase64" id="prescBase64_@p.Id" value="" />
+                        <input type="hidden" name="prescriptionFileName" id="prescFileName_@p.Id" value="" />
+                        <button type="submit" onclick="fillPrescription(@p.Id)"
+                                style="width:100%; background:#2563eb; color:white; border:none; border-radius:10px; padding:12px; font-size:15px; font-weight:600; cursor:pointer;">
+                            Order Now
+                        </button>
+                    </form>
 
-                           style="flex:1; background:#2563eb; color:white; border-radius:10px; padding:12px; font-size:15px; font-weight:600; text-align:center; text-decoration:none;">
-                        Order Now
-                    </a>
                     <a href="https://www.google.com/maps?q=@p.Latitude,@p.Longitude" target="_blank"
                            style="background:white; color:#2563eb; border:2px solid #2563eb; border-radius:10px; padding:12px 18px; font-size:15px; font-weight:600; text-decoration:none;">
                         View on Map
@@ -69,3 +73,11 @@
         }
     </div>
 </div>
+<script>
+    function fillPrescription(pharmacyId) {
+        const base64 = sessionStorage.getItem('prescriptionImage') || '';
+        const fileName = sessionStorage.getItem('prescriptionFileName') || '';
+        document.getElementById('prescBase64_' + pharmacyId).value = base64;
+        document.getElementById('prescFileName_' + pharmacyId).value = fileName;
+    }
+</script>

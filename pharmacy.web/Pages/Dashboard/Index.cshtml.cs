@@ -67,6 +67,12 @@ namespace Pharmacy.web.Pages.Dashboard
             var medicines = await _medicineService.GetAllMedicinesAsync();
             AvailableMedicines = medicines.Count(m => m.IsAvailable);
         }
+        public async Task<IActionResult> OnPostAcceptAsync(int id)
+        {
+            await _orderService.UpdateOrderStatusAsync(id, "Confirmed");
+            TempData["SuccessMessage"] = $"Order #{id} has been accepted successfully!";
+            return RedirectToPage();
+        }
 
     }
 }

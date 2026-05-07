@@ -18,7 +18,9 @@ namespace pharmacy.Application.DTOs
         public string? Notes { get; set; }
         public string UserName { get; set; }
         public string PharmacyName { get; set; }
-       
+        public string? PrescriptionImagePath { get; set; }
+
+
         public List<OrderItemDto> Items { get; set; } = new();
     }
 

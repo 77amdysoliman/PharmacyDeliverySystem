@@ -183,21 +183,14 @@
                     </div>
                     @if (m.IsAvailable)
                     {
-                        @if (m.RequiresPrescription)
-                        {
-                            <!-- Opens modal first, then navigates after upload -->
-                            <button class="btn-order"
-                                    onclick="openPrescriptionModal(
-                                        '@Url.Page("/Orders/NearestPharmacies", new {
-                                            medicineId   = m.Id,
-                                            medicineName = m.Name,
-                                            medicinePrice = m.Price,
-                                            latitude     = Model.UserLatitude,
-                                            longitude    = Model.UserLongitude
-                                        })')">
-                                Order Now
-                            </button>
-                        }
+                    @if (m.RequiresPrescription)
+{
+    <button class="btn-order"
+            data-order-url="/Orders/NearestPharmacies?medicineId=@m.Id&medicineName=@Uri.EscapeDataString(m.Name)&medicinePrice=@m.Price&latitude=@Model.UserLatitude&longitude=@Model.UserLongitude"
+            onclick="openPrescriptionModal(this.dataset.orderUrl)">
+        Order Now
+    </button>
+}
                         else
                         {
                             <a class="btn-order"
@@ -260,16 +253,15 @@
             document.getElementById('filterForm').submit();
         }, 500);
     }
-
-    function openPrescriptionModal(orderUrl) {
-        pendingOrderUrl = orderUrl;
-        document.getElementById('prescriptionFile').value = '';
-        document.getElementById('prescriptionError').style.display = 'none';
-        document.getElementById('previewWrap').style.display = 'none';
-        document.getElementById('previewImg').src = '';
-        document.getElementById('prescriptionModal').classList.add('open');
-    }
-
+function openPrescriptionModal(orderUrl) {
+    console.log('URL received:', orderUrl);
+    pendingOrderUrl = orderUrl;
+    document.getElementById('prescriptionFile').value = '';
+    document.getElementById('prescriptionError').style.display = 'none';
+    document.getElementById('previewWrap').style.display = 'none';
+    document.getElementById('previewImg').src = '';
+    document.getElementById('prescriptionModal').classList.add('open');
+}
     function closeModal() {
         document.getElementById('prescriptionModal').classList.remove('open');
         pendingOrderUrl = '';
@@ -290,24 +282,25 @@
             document.getElementById('previewWrap').style.display = 'none';
         }
     }
+function proceedToOrder() {
+    const file = document.getElementById('prescriptionFile').files[0];
 
-    function proceedToOrder() {
-        const file = document.getElementById('prescriptionFile').files[0];
-
-        if (!file) {
-            document.getElementById('prescriptionError').style.display = 'block';
-            return;
-        }
-
-        // Store the image in sessionStorage as base64 to pass to the next page
-        const reader = new FileReader();
-        reader.onload = e => {
-            sessionStorage.setItem('prescriptionImage', e.target.result);
-            sessionStorage.setItem('prescriptionFileName', file.name);
-            window.location.href = pendingOrderUrl;
-        };
-        reader.readAsDataURL(file);
+    if (!file) {
+        document.getElementById('prescriptionError').style.display = 'block';
+        return;
     }
+
+    const reader = new FileReader();
+    reader.onload = e => {
+        // ✅ حفظ في sessionStorage مؤقتاً
+        sessionStorage.setItem('prescriptionImage', e.target.result);
+        sessionStorage.setItem('prescriptionFileName', file.name);
+
+        // Navigate للصفحة الجاية
+        window.location.href = pendingOrderUrl;
+    };
+    reader.readAsDataURL(file);
+}
 
     // Close modal when clicking outside
     document.getElementById('prescriptionModal').addEventListener('click', function (e) {

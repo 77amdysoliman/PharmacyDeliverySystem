@@ -3,6 +3,20 @@
 @{
     Layout = "_LayoutDashboard";
 }
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="toast" style="position:fixed; top:30px; left:50%; transform:translateX(-50%); background:white; color:#16a34a; padding:16px 30px; border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,0.12); z-index:9999; font-weight:600; font-size:15px; display:flex; align-items:center; gap:12px; border-left:5px solid #16a34a;">
+        <span style="font-size:22px;">✅</span>
+        <span>@TempData["SuccessMessage"]</span>
+    </div>
+    <script>
+        setTimeout(function () {
+            var toast = document.getElementById('toast');
+            toast.style.transition = 'opacity 0.5s';
+            toast.style.opacity = '0';
+        }, 2500);
+    </script>
+}
 
 <div style="min-height:100vh; background:#eef2ff; padding:30px; font-family:'Segoe UI',sans-serif;">
 
@@ -81,7 +95,13 @@
                         </td>
                         <td style="padding:14px;">@order.TotalPrice.ToString("N0") EGP</td>
                         <td style="padding:14px;">
-                            <button style="background:#16a34a; color:white; border:none; padding:8px 20px; border-radius:8px; cursor:pointer; font-weight:600;">Accept</button>
+                            <form method="post">
+                                <input type="hidden" name="id" value="@order.Id" />
+                                <button type="submit" asp-page-handler="Accept"
+                                        style="background:#16a34a; color:white; border:none; padding:8px 20px; border-radius:8px; cursor:pointer; font-weight:600;">
+                                    Accept
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 }

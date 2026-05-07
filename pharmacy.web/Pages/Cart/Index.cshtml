@@ -56,8 +56,10 @@
             </div>
 
             <!-- Confirm Form -->
-            <form method="post" asp-page-handler="Confirm">
+            <form method="post" asp-page-handler="Confirm" enctype="multipart/form-data">
                 <input type="hidden" asp-for="PharmacyId" />
+                <input type="hidden" id="prescriptionData" name="PrescriptionData" />
+
 
                 <div style="margin-bottom:16px;">
                     <label style="font-weight:600; color:#374151; display:block; margin-bottom:8px;">Delivery Address</label>
@@ -80,3 +82,13 @@
         }
     </div>
 </div>
+
+<script>
+    // ✅ جيب الصورة من sessionStorage وحطها في الـ Hidden Field
+    window.onload = function() {
+        const prescriptionImage = sessionStorage.getItem('prescriptionImage');
+        if (prescriptionImage) {
+            document.getElementById('prescriptionData').value = prescriptionImage;
+        }
+    }
+</script>

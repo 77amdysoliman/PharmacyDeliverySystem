@@ -1,6 +1,8 @@
-﻿using pharmacy.Application.DTOs;
+﻿using Microsoft.AspNetCore.Identity;
+using pharmacy.Application.DTOs;
 using pharmacy.Application.Interfaces;
 using pharmacy.domin.Entites;
+using pharmacy.domin.Identity;
 using pharmacy.domin.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -13,10 +15,15 @@ namespace pharmacy.Application.Sevices
     public class OrderService : IOrderService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<ApplicationUser> _userManager; // 👈 أضف
 
-        public OrderService(IUnitOfWork unitOfWork)
+
+        public OrderService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager) // 👈 أضف
         {
             _unitOfWork = unitOfWork;
+            _userManager = userManager; // 👈 أضف
+
+
         }
 
         // بيجيب كل الطلبات
@@ -24,9 +31,9 @@ namespace pharmacy.Application.Sevices
         {
             var orders = await _unitOfWork.Orders.GetAllAsync();
             var orderItems = await _unitOfWork.OrderItems.GetAllAsync();
-            var users = await _unitOfWork.Users.GetAllAsync();
             var pharmacies = await _unitOfWork.Pharmacies.GetAllAsync();
             var medicines = await _unitOfWork.Medicines.GetAllAsync();
+            var identityUsers = _userManager.Users.ToList(); // 👈 بدل Users من UnitOfWork
 
             return orders.Select(o => new OrderDto
             {
@@ -36,7 +43,8 @@ namespace pharmacy.Application.Sevices
                 TotalPrice = o.TotalPrice,
                 DeliveryAddress = o.DeliveryAddress,
                 Notes = o.Notes,
-                UserName = users.FirstOrDefault(c => c.Id.ToString() == o.UserId)?.FullName ?? "",
+                PrescriptionImagePath = o.PrescriptionImagePath,
+                UserName = identityUsers.FirstOrDefault(u => u.Id == o.UserId)?.FullName ?? "", // 👈
                 PharmacyName = pharmacies.FirstOrDefault(p => p.Id == o.PharmacyId)?.Name ?? "",
                 Items = orderItems
                     .Where(oi => oi.OrderId == o.Id)
@@ -57,7 +65,7 @@ namespace pharmacy.Application.Sevices
             var orderItems = await _unitOfWork.OrderItems.GetAllAsync();
             var pharmacies = await _unitOfWork.Pharmacies.GetAllAsync();
             var medicines = await _unitOfWork.Medicines.GetAllAsync();
-            var users = await _unitOfWork.Users.GetAllAsync();
+            var identityUsers = _userManager.Users.ToList(); // 👈
 
             return orders
                 .Where(o => o.UserId == userId)
@@ -69,7 +77,8 @@ namespace pharmacy.Application.Sevices
                     TotalPrice = o.TotalPrice,
                     DeliveryAddress = o.DeliveryAddress,
                     Notes = o.Notes,
-                    UserName = users.FirstOrDefault(c => c.Id.ToString() == o.UserId)?.FullName ?? "",
+                    PrescriptionImagePath = o.PrescriptionImagePath,
+                    UserName = identityUsers.FirstOrDefault(u => u.Id == o.UserId)?.FullName ?? "", // 👈
                     PharmacyName = pharmacies.FirstOrDefault(p => p.Id == o.PharmacyId)?.Name ?? "",
                     Items = orderItems
                         .Where(oi => oi.OrderId == o.Id)
@@ -90,7 +99,7 @@ namespace pharmacy.Application.Sevices
             var orderItems = await _unitOfWork.OrderItems.GetAllAsync();
             var pharmacies = await _unitOfWork.Pharmacies.GetAllAsync();
             var medicines = await _unitOfWork.Medicines.GetAllAsync();
-            var users = await _unitOfWork.Users.GetAllAsync();
+            var identityUsers = _userManager.Users.ToList(); // 👈
 
             return orders
                 .Where(o => o.PharmacyId == pharmacyId)
@@ -102,7 +111,8 @@ namespace pharmacy.Application.Sevices
                     TotalPrice = o.TotalPrice,
                     DeliveryAddress = o.DeliveryAddress,
                     Notes = o.Notes,
-                    UserName = users.FirstOrDefault(c => c.Id.ToString() == o.UserId)?.FullName ?? "",
+                    PrescriptionImagePath = o.PrescriptionImagePath,
+                    UserName = identityUsers.FirstOrDefault(u => u.Id == o.UserId)?.FullName ?? "", // 👈
                     PharmacyName = pharmacies.FirstOrDefault(p => p.Id == o.PharmacyId)?.Name ?? "",
                     Items = orderItems
                         .Where(oi => oi.OrderId == o.Id)
@@ -135,6 +145,8 @@ namespace pharmacy.Application.Sevices
                 TotalPrice = o.TotalPrice,
                 DeliveryAddress = o.DeliveryAddress,
                 Notes = o.Notes,
+                PrescriptionImagePath = o.PrescriptionImagePath, // 👈 أضف
+
                 UserName = users.FirstOrDefault(c => c.Id.ToString() == o.UserId)?.FullName ?? "",
                 PharmacyName = pharmacies.FirstOrDefault(p => p.Id == o.PharmacyId)?.Name ?? "",
                 Items = orderItems
@@ -161,6 +173,8 @@ namespace pharmacy.Application.Sevices
                 Notes = orderDto.Notes,
                 UserId = orderDto.UserId,
                 PharmacyId = orderDto.PharmacyId,
+                PrescriptionImagePath = orderDto.PrescriptionImagePath,
+
             };
 
             await _unitOfWork.Orders.AddAsync(order);

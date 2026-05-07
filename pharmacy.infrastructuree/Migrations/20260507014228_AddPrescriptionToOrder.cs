@@ -5,23 +5,24 @@
 namespace pharmacy.infrastructuree.Migrations
 {
     /// <inheritdoc />
-    public partial class finall : Migration
+    public partial class AddPrescriptionToOrder : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            
+            migrationBuilder.AddColumn<string>(
+                name: "PrescriptionImagePath",
+                table: "Orders",
+                type: "nvarchar(max)",
+                nullable: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<bool>(
-                name: "IsActive",
-                table: "AspNetUsers",
-                type: "bit",
-                nullable: false,
-                defaultValue: false);
+            migrationBuilder.DropColumn(
+                name: "PrescriptionImagePath",
+                table: "Orders");
         }
     }
 }

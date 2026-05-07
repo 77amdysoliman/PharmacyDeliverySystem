@@ -20,8 +20,9 @@
         public string DeliveryAddress { get; set; } = string.Empty;
         public double UserLatitude { get; set; }
         public double UserLongitude { get; set; }
+        public string? PrescriptionImagePath { get; set; } 
 
-        // ✅ غيرنا UserId من int لـ string
+
         public string UserId { get; set; } = string.Empty;
         public int PharmacyId { get; set; }
 

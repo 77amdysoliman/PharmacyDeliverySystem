@@ -6,6 +6,7 @@ using pharmacy.Application.DTOs;
 using pharmacy.Application.Interfaces;
 using pharmacy.domin.Identity;
 using pharmacy.web.Pages.Helpers;
+
 namespace pharamcy.web.Pages.Cart
 {
     [Authorize]
@@ -13,11 +14,15 @@ namespace pharamcy.web.Pages.Cart
     {
         private readonly IOrderService _orderService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IWebHostEnvironment _env;
 
-        public IndexModel(IOrderService orderService, UserManager<ApplicationUser> userManager)
+        public IndexModel(IOrderService orderService,
+                         UserManager<ApplicationUser> userManager,
+                         IWebHostEnvironment env)
         {
             _orderService = orderService;
             _userManager = userManager;
+            _env = env;
         }
 
         public List<CartItem> CartItems { get; set; } = new();
@@ -32,23 +37,29 @@ namespace pharamcy.web.Pages.Cart
         [BindProperty]
         public string? Notes { get; set; }
 
+        // Prescription
+        [BindProperty]
+        public IFormFile? PrescriptionFile { get; set; }
+
+        public bool HasPrescriptionInSession { get; set; }
+
         public async Task OnGetAsync()
         {
             CartItems = CartHelper.GetCart(HttpContext.Session);
-            if (PharmacyId == 0)
-                PharmacyId = HttpContext.Session.GetInt32("PharmacyId") ?? 0;
             var user = await _userManager.GetUserAsync(User);
             if (user != null)
                 DeliveryAddress = user.Address ?? "";
+
+            // ‘Ê› ·Ê ›Ì prescription ›Ì «·‹ Session
+            HasPrescriptionInSession = !string.IsNullOrEmpty(
+                HttpContext.Session.GetString("PrescriptionImageBase64"));
         }
 
-        
         public IActionResult OnPostRemove(string medicineName)
         {
             CartHelper.RemoveItem(HttpContext.Session, medicineName);
             return RedirectToPage(new { PharmacyId });
         }
-
 
         public async Task<IActionResult> OnPostConfirmAsync()
         {
@@ -57,8 +68,32 @@ namespace pharamcy.web.Pages.Cart
 
             var cart = CartHelper.GetCart(HttpContext.Session);
             if (!cart.Any()) return Page();
-            if (PharmacyId == 0)
-                PharmacyId = HttpContext.Session.GetInt32("PharmacyId") ?? 0;
+
+            // ? «Õ›Ÿ «·’Ê—… ·Ê „ÊÃÊœ…
+            string? prescriptionImagePath = null;
+
+            var base64 = HttpContext.Session.GetString("PrescriptionImageBase64");
+            var fileName = HttpContext.Session.GetString("PrescriptionFileName");
+
+            if (!string.IsNullOrEmpty(base64) && !string.IsNullOrEmpty(fileName))
+            {
+                // ÕÊ¯· Base64 ·‹ bytes Ê«Õ›ŸÂ«
+                var bytes = Convert.FromBase64String(base64.Split(',')[1]);
+                var uniqueName = $"{Guid.NewGuid()}_{fileName}";
+                var folder = Path.Combine(_env.WebRootPath, "prescriptions");
+
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+
+                var filePath = Path.Combine(folder, uniqueName);
+                await System.IO.File.WriteAllBytesAsync(filePath, bytes);
+
+                prescriptionImagePath = $"/prescriptions/{uniqueName}";
+
+                // «„”Õ „‰ «·‹ Session
+                HttpContext.Session.Remove("PrescriptionImageBase64");
+                HttpContext.Session.Remove("PrescriptionFileName");
+            }
 
             var orderDto = new OrderDto
             {
@@ -66,6 +101,7 @@ namespace pharamcy.web.Pages.Cart
                 PharmacyId = PharmacyId,
                 DeliveryAddress = DeliveryAddress,
                 Notes = Notes,
+                PrescriptionImagePath = prescriptionImagePath, // ?
                 Items = cart.Select(x => new OrderItemDto
                 {
                     MedicineId = x.MedicineId,
@@ -75,11 +111,8 @@ namespace pharamcy.web.Pages.Cart
                 }).ToList()
             };
 
-            // ? «·”ÿ— œÂ ﬂ«‰ ‰«ﬁ’!
             await _orderService.CreateOrderAsync(orderDto);
-
             CartHelper.ClearCart(HttpContext.Session);
-            HttpContext.Session.Remove("PharmacyId");
 
             return RedirectToPage("/MyOrders/Index");
         }

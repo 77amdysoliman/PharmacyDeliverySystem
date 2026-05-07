@@ -1,35 +1,28 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.WebUtilities;
-using pharmacy.Application.Sevices;
 using pharmacy.domin.Identity;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace Pharmacy.web.Pages.Account
 {
     public class ForgotPasswordModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IEmailService _emailService;
 
-        public ForgotPasswordModel(
-            UserManager<ApplicationUser> userManager,
-            IEmailService emailService)
+        public ForgotPasswordModel(UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
-            _emailService = emailService;
         }
 
         [BindProperty]
-        public ForgotPasswordInput Input { get; set; } = new();
+        public InputModel Input { get; set; } = new();
 
-        public class ForgotPasswordInput
+        public class InputModel
         {
-            [Required]
-            [EmailAddress]
-            public string Email { get; set; } = string.Empty;
+            [Required(ErrorMessage = "Email is required")]
+            [EmailAddress(ErrorMessage = "Invalid email")]
+            public string Email { get; set; }
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -37,30 +30,21 @@ namespace Pharmacy.web.Pages.Account
             if (!ModelState.IsValid) return Page();
 
             var user = await _userManager.FindByEmailAsync(Input.Email);
-
-            if (user != null)
+            if (user == null)
             {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
-                // ✅ FIX: Base64Url encoding
-                var tokenBytes = Encoding.UTF8.GetBytes(token);
-                var encodedToken = WebEncoders.Base64UrlEncode(tokenBytes);
-
-                var resetLink = Url.Page(
-                    "/Account/ResetPassword",
-                    pageHandler: null,
-                    values: new
-                    {
-                        email = Input.Email,
-                        token = encodedToken
-                    },
-                    protocol: Request.Scheme);
-
-                await _emailService.SendPasswordResetEmailAsync(Input.Email, resetLink!);
+                ModelState.AddModelError(string.Empty, "Email not found");
+                return Page();
             }
 
-            TempData["EmailSent"] = "If this email exists, a reset link has been sent.";
-            return Page();
+            // ✅ بنعمل Token ونبعته في الـ URL مباشرة
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var encodedToken = Uri.EscapeDataString(token);
+
+            return RedirectToPage("/Account/ResetPassword", new
+            {
+                email = Input.Email,
+                token = encodedToken
+            });
         }
     }
 }

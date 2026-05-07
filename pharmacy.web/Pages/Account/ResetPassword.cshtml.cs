@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.WebUtilities;
 using pharmacy.domin.Identity;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace Pharmacy.web.Pages.Account
 {
@@ -18,58 +16,46 @@ namespace Pharmacy.web.Pages.Account
         }
 
         [BindProperty]
-        public ResetPasswordInput Input { get; set; } = new();
+        public InputModel Input { get; set; } = new();
 
-        public string? ErrorMessage { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string Email { get; set; } = "";
 
-        public class ResetPasswordInput
+        [BindProperty(SupportsGet = true)]
+        public string Token { get; set; } = "";
+
+        public class InputModel
         {
-            public string Email { get; set; } = string.Empty;
-            public string Token { get; set; } = string.Empty;
+            [Required(ErrorMessage = "Password is required")]
+            [MinLength(6, ErrorMessage = "Password must be at least 6 characters")]
+            [DataType(DataType.Password)]
+            public string Password { get; set; }
 
-            [Required]
-            [MinLength(6)]
-            public string NewPassword { get; set; } = string.Empty;
-
-            [Required]
-            [Compare("NewPassword")]
-            public string ConfirmPassword { get; set; } = string.Empty;
-        }
-
-        public void OnGet(string email, string token)
-        {
-            Input.Email = email ?? "";
-
-            // ✅ FIX: Base64Url decode
-            var decodedBytes = WebEncoders.Base64UrlDecode(token);
-            Input.Token = Encoding.UTF8.GetString(decodedBytes);
+            [Required(ErrorMessage = "Confirm Password is required")]
+            [Compare("Password", ErrorMessage = "Passwords do not match")]
+            [DataType(DataType.Password)]
+            public string ConfirmPassword { get; set; }
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid) return Page();
 
-            var user = await _userManager.FindByEmailAsync(Input.Email);
-
+            var user = await _userManager.FindByEmailAsync(Email);
             if (user == null)
-            {
-                ErrorMessage = "Invalid request.";
-                return Page();
-            }
+                return RedirectToPage("/Account/Login");
 
-            var result = await _userManager.ResetPasswordAsync(
-                user,
-                Input.Token,
-                Input.NewPassword);
+            var decodedToken = Uri.UnescapeDataString(Token);
+            var result = await _userManager.ResetPasswordAsync(user, decodedToken, Input.Password);
 
             if (result.Succeeded)
             {
-                TempData["SuccessMessage"] = "Password reset successfully.";
+                TempData["SuccessMessage"] = "Password reset successfully! ✅";
                 return RedirectToPage("/Account/Login");
             }
 
-            ErrorMessage = string.Join(" | ",
-                result.Errors.Select(e => e.Description));
+            foreach (var error in result.Errors)
+                ModelState.AddModelError(string.Empty, error.Description);
 
             return Page();
         }
